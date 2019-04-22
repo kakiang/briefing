@@ -10,4 +10,14 @@ An attempt to clone Google News app design using Flutter
 
 ## Screenshots
 
-![main ui](ui_main_list.jpg) ![ui bottom sheet](ui_bottomsheet.jpg) ![ui list](ui_list.jpg)
+### Main UI
+
+![main ui](ui_main_list.jpg)
+
+### UI Buttomsheet
+
+![ui bottom sheet](ui_bottomsheet.jpg)
+
+### UI list Newsstand
+
+![ui list](ui_list.jpg)
