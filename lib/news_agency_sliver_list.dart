@@ -1,43 +1,20 @@
 import 'package:briefing/model/news_agency.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class NewsAgencyListPage extends StatefulWidget {
+class NewsAgencySliverList extends StatefulWidget {
   @override
-  _NewsAgencyListPageState createState() => _NewsAgencyListPageState();
+  _NewsAgencySliverListState createState() => _NewsAgencySliverListState();
 }
 
-class _NewsAgencyListPageState extends State<NewsAgencyListPage> {
+class _NewsAgencySliverListState extends State<NewsAgencySliverList> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: CustomScrollView(
-        slivers: <Widget>[
-          SliverAppBar(
-            title: Text(
-              "News Agencies",
-            ),
-            actions: <Widget>[
-              IconButton(
-                icon: Icon(
-                  Icons.search,
-                  semanticLabel: 'search',
-                ),
-                onPressed: () {
-                  print('Search menu');
-                },
-              ),
-            ],
-            elevation: 0.5,
-            centerTitle: true,
-          ),
-          SliverList(
-            delegate: SliverChildListDelegate(
-              newsAgencyList.map<Widget>((NewsAgency agency) {
-                return agencyListTile(agency);
-              }).toList(),
-            ),
-          ),
-        ],
+    return SliverList(
+      delegate: SliverChildListDelegate(
+        newsAgencyList.map<Widget>((NewsAgency agency) {
+          return agencyListTile(agency);
+        }).toList(),
       ),
     );
   }
@@ -80,6 +57,11 @@ class _NewsAgencyListPageState extends State<NewsAgencyListPage> {
                 : Theme.of(context).iconTheme.color,
           ),
         ),
+        onTap: () async {
+          if (await canLaunch(agency.url)) {
+            launch(agency.url);
+          }
+        },
       ),
     );
   }

@@ -49,7 +49,7 @@ class _ArticleWebViewState extends State<ArticleWebView> {
         iconTheme: IconThemeData(),
         elevation: 1.0,
         title: Text(
-          widget.article.agency,
+          widget.article.agency.name,
         ),
       ),
       body: WebView(

@@ -12,6 +12,7 @@ ThemeData buildAppTheme() {
         buttonColor: themeAppWhite100,
         textTheme: ButtonTextTheme.normal,
       ),
+      
       scaffoldBackgroundColor: themeAppBackgroundWhite,
       cardColor: themeAppBackgroundWhite,
       textSelectionColor: themeAppGrey600,
@@ -20,14 +21,14 @@ ThemeData buildAppTheme() {
       textTheme: _buildAppTextTheme(base.textTheme),
       primaryTextTheme: _buildAppTextTheme(base.primaryTextTheme),
       accentTextTheme: _buildAppTextTheme(base.accentTextTheme),
-      // accentIconTheme:IconThemeData().copyWith(color: Colors.blue),
+      accentIconTheme:IconThemeData().copyWith(color: Colors.blue),
       primaryIconTheme: base.iconTheme.copyWith(color: themeAppGrey800),
       inputDecorationTheme: InputDecorationTheme(
         border: OutlineInputBorder(),
 //        border: CutCornersBorder(),
       ),
       iconTheme: IconThemeData().copyWith(
-        color: themeAppGrey600,
+        color: themeAppGrey700,
       ));
 }
 
