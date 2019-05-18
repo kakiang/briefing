@@ -7,6 +7,9 @@ import 'package:flutter/services.dart';
 import 'package:briefing/widget/main_sliverappbar.dart';
 import 'package:briefing/news_agency_sliver_list.dart';
 
+import 'package:http/http.dart' as http;
+import 'package:webfeed/webfeed.dart';
+
 void main() {
   SystemChrome.setSystemUIOverlayStyle(
     SystemUiOverlayStyle(
@@ -71,19 +74,10 @@ class _MyHomePageState extends State<MyHomePage> {
         child: CustomScrollView(
           slivers: <Widget>[
             MainSliverAppBar(title: _pages.keys.elementAt(_selectedIndex)),
-            _pages.values.elementAt(_selectedIndex),
-            // BriefingSliverList(),
+            _pages.values.elementAt(_selectedIndex)
           ],
         ),
       ),
-      // body: Container(
-      //   child: Column(
-      //     children: <Widget>[
-      //       WeatherCard(),
-      //       Expanded(child: Briefing()),
-      //     ],
-      //   ),
-      //   ),
       bottomNavigationBar: Theme(
         data: Theme.of(context).copyWith(
           canvasColor: Colors.white,
@@ -117,6 +111,34 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+    });
+  }
+}
+
+class rssfeed {
+  // RSS feed
+  RssFeed devFeed() {
+    var client = new http.Client();
+    client
+        .get("http://feeds.bbci.co.uk/news/world/africa/rss.xml")
+        .then((response) {
+      return response.body;
+    }).then((bodyString) {
+      var channel = new RssFeed.parse(bodyString);
+      print(channel);
+      return channel;
+    });
+  }
+
+  // Atom feed
+  RssFeed vergeFeed() {
+    var client = new http.Client();
+    client.get("https://www.theverge.com/rss/index.xml").then((response) {
+      return response.body;
+    }).then((bodyString) {
+      var feed = new AtomFeed.parse(bodyString);
+      print(feed);
+      return feed;
     });
   }
 }

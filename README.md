@@ -1,6 +1,6 @@
 # Briefing
-
-An attempt to clone Google News app design using Flutter
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+An attempt to clone part of Google News app design using Flutter
 
 > Hard-coded data
 
