@@ -1,8 +1,9 @@
+import 'package:briefing/model/article_rss.dart';
 import 'package:flutter/material.dart';
-import 'package:briefing/model/article.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class ArticleThumbnail extends StatefulWidget {
-  final Article article;
+  final ArticleRss article;
 
   const ArticleThumbnail({Key key, @required this.article}) : super(key: key);
   @override
@@ -13,19 +14,21 @@ class _ArticleThumbnailState extends State<ArticleThumbnail> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(left: 8.0, bottom: 8.0),
       width: 92.0,
       height: 92.0,
-      decoration: BoxDecoration(
-        shape: BoxShape.rectangle,
-        // border: Border.all(style: BorderStyle.solid, width: 2.0),
-        borderRadius: BorderRadius.circular(4.0),
-        color: Colors.grey[200],
-        image: DecorationImage(
-          fit: BoxFit.cover,
-          image: NetworkImage(widget.article.thumbnail ?? ''),
-        ),
-      ),
+      margin: EdgeInsets.only(right: 8.0, left: 8.0),
+      child: CachedNetworkImage(
+          imageUrl: widget.article.thumbnail ?? '',
+          imageBuilder: (context, imageProvider) => Container(
+                decoration: BoxDecoration(
+                    shape: BoxShape.rectangle,
+                    borderRadius: BorderRadius.circular(5.0),
+                    image: DecorationImage(
+                        image: imageProvider, fit: BoxFit.cover)),
+              ),
+          placeholder: (context, url) => Container(),
+          errorWidget: (context, url, error) => Container(),
+          fit: BoxFit.fill),
     );
 
     // // This is an animated widget built into flutter.

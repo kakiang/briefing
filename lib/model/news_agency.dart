@@ -1,55 +1,46 @@
-final newsAgencyList = [
-  NewsAgency(
-      name: "African News Agency",
-      url: "https://www.africannewsagency.com/",
-      iconUrl: 'https://www.enca.com/sites/default/files/3600130208.jpg',
-      starred: true),
-  NewsAgency(
+final newsAgencyList = {
+  "Africa Intelligence": NewsAgency(
+      name: "Africa Intelligence",
+      url: "https://www.africaintelligence.com/",
+      rss: "http://feeds.feedburner.com/AfricaEnergyIntelligence",
+      iconUrl: 'https://www.africaintelligence.com/img/logo-site.png',
+      starred: false),
+  "AllAfrica.com": NewsAgency(
       name: "AllAfrica.com",
       url: "https://allafrica.com",
+      rss: "https://allafrica.com/tools/headlines/rdf/business/headlines.rdf",
       iconUrl: 'https://allafrica.com/static/images/structure/aa-logo.png',
-      starred: true),
-  NewsAgency(
-      name: "BBC News",
+      starred: false),
+  "BBC World News": NewsAgency(
+      name: "BBC World News",
       url: "bbc.co.uk",
+      rss: "http://feeds.bbci.co.uk/news/world/rss.xml",
       iconUrl: 'https://news.bbcimg.co.uk/nol/shared/img/bbc_news_120x60.gif',
       starred: true),
-  NewsAgency(
-      name: "VOA News",
-      url: "https://www.voanews.com",
-      iconUrl:
-          'https://www.voanews.com/Content/responsive/VOA/en-US/img/logo.png',
-      starred: true),
-  NewsAgency(
-      name: "RFI",
-      url: "http://www.rfi.fr/",
-      iconUrl:
-          "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Rfi_logo.svg/65px-Rfi_logo.svg.png",
-//      iconUrl: 'http://en.rfi.fr/bundles/aefhermesrfi/img/logo_rfi_big.png',
+  "BBC technology news": NewsAgency(
+      name: "BBC technology news",
+      url: "bbc.co.uk",
+      rss: 'http://feeds.bbci.co.uk/news/technology/rss.xml',
+      iconUrl: 'https://news.bbcimg.co.uk/nol/shared/img/bbc_news_120x60.gif',
       starred: false),
-  NewsAgency(
-      id: 1,
-      name: "CNN",
-      url: "http://www.cnn.com/",
-      iconUrl:
-          'http://cdn.cnn.com/cnn/.e1mo/img/4.0/logos/logo_cnn_badge_2up.png',
-      starred: true),
-  NewsAgency(
+  "Africanews": NewsAgency(
       name: "Africanews",
       url: "http://www.africanews.com/",
-      iconUrl:
-          'https://www.businessforafricaforum.com/wp-content/uploads/2017/11/Africanews_logo_coul_370x270-400x300.png',
+      rss: "http://www.africanews.com/feed/rss",
+      // iconUrl:
+      //     'https://www.businessforafricaforum.com/wp-content/uploads/2017/11/Africanews_logo_coul_370x270-400x300.png',
+      iconUrl: 'https://allafrica.com/static/images/structure/aa-logo.png',
       starred: true),
-];
+};
 
 class NewsAgency {
   final int id;
   final String name;
   final String url;
+  final String rss;
   final String iconUrl;
   bool starred;
 
-  NewsAgency({this.id, this.name, this.url, this.iconUrl, this.starred});
-
-  
+  NewsAgency(
+      {this.id, this.name, this.url, this.rss, this.iconUrl, this.starred});
 }

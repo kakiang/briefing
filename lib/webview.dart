@@ -2,12 +2,12 @@
 
 import 'dart:async';
 
-import 'package:briefing/model/article.dart';
+import 'package:briefing/model/article_rss.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class ArticleWebView extends StatefulWidget {
-  final Article article;
+  final ArticleRss article;
 
   ArticleWebView(this.article);
 
@@ -49,7 +49,7 @@ class _ArticleWebViewState extends State<ArticleWebView> {
         iconTheme: IconThemeData(),
         elevation: 1.0,
         title: Text(
-          widget.article.agency.name,
+          widget.article.agency,
         ),
       ),
       body: WebView(

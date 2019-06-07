@@ -10,7 +10,7 @@ class Article {
   final String pubDate;
   final String subject;
   final String urlImage;
-  final String assetName;
+  String assetName;
   final String thumbnail;
   NewsAgency agency;
 
@@ -26,6 +26,17 @@ class Article {
       this.assetName,
       this.thumbnail,
       this.agency});
+
+  Article.fromMap(Map<String, dynamic> json)
+      : id = json['id'],
+        author = json['author'],
+        title = json['title'],
+        description = json['description'],
+        link = json['json'],
+        pubDate = json['pub_date'],
+        subject = json['subject'],
+        urlImage = json['url_image'],
+        thumbnail = json['thumbnail'];
 
   String get timeago {
     var formatter = new DateFormat("EEE, d MMM yyyy HH:mm:ss zzz");

@@ -1,9 +1,9 @@
+import 'package:briefing/model/article_rss.dart';
 import 'package:flutter/material.dart';
-import 'package:briefing/model/article.dart';
 import 'package:share/share.dart';
 
 class BottomSheetArticleMenu extends StatelessWidget {
-  final Article article;
+  final ArticleRss article;
 
   const BottomSheetArticleMenu({Key key, @required this.article})
       : super(key: key);
@@ -28,7 +28,7 @@ class BottomSheetArticleMenu extends StatelessWidget {
               leading: new Icon(Icons.share),
               title: new Text('Share'),
               onTap: () {
-                Share.share("check out ${article.link}");
+                Share.share('check out ${article.link}');
               },
             ),
           ],

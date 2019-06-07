@@ -1,6 +1,7 @@
 import 'package:briefing/model/news_agency.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class NewsAgencySliverList extends StatefulWidget {
   @override
@@ -12,7 +13,7 @@ class _NewsAgencySliverListState extends State<NewsAgencySliverList> {
   Widget build(BuildContext context) {
     return SliverList(
       delegate: SliverChildListDelegate(
-        newsAgencyList.map<Widget>((NewsAgency agency) {
+        newsAgencyList.values.map<Widget>((NewsAgency agency) {
           return agencyListTile(agency);
         }).toList(),
       ),
@@ -31,19 +32,21 @@ class _NewsAgencySliverListState extends State<NewsAgencySliverList> {
     }
 
     return Container(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
       child: ListTile(
         leading: Container(
-          width: 42.0,
-          height: 42.0,
+          width: 56.0,
+          height: 36.0,
           decoration: BoxDecoration(
             shape: BoxShape.rectangle,
-            borderRadius: BorderRadius.circular(0.5),
+            borderRadius: BorderRadius.circular(2.0),
             image: DecorationImage(
-              fit: BoxFit.contain,
-              image: NetworkImage(
-                agency.iconUrl ?? '',
-              ),
+              fit: BoxFit.fill,
+              image: agency.iconUrl != null && agency.iconUrl.isNotEmpty
+                  ? CachedNetworkImageProvider(
+                      agency.iconUrl,
+                    )
+                  : AssetImage('assets/images/loading.png'),
             ),
           ),
         ),

@@ -12,7 +12,7 @@ ThemeData buildAppTheme() {
         buttonColor: themeAppWhite100,
         textTheme: ButtonTextTheme.normal,
       ),
-      
+
       scaffoldBackgroundColor: themeAppBackgroundWhite,
       cardColor: themeAppBackgroundWhite,
       textSelectionColor: themeAppGrey600,
