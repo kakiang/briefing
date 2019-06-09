@@ -1,10 +1,10 @@
-import 'package:briefing/model/article_rss.dart';
+import 'package:briefing/model/article.dart';
 import 'package:flutter/material.dart';
 import 'package:briefing/widget/article_bottom_section.dart';
 import 'package:briefing/widget/article_title_section.dart';
 
 class BriefingCard extends StatefulWidget {
-  final ArticleRss article;
+  final Article article;
   static const double height = 300.0;
 
   const BriefingCard({Key key, this.article}) : super(key: key);

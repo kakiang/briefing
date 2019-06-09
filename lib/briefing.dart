@@ -1,4 +1,3 @@
-// import 'package:briefing/model/article_rss.dart';
 // import 'package:flutter/material.dart';
 // import 'package:briefing/model/article.dart';
 // import 'package:briefing/briefing_card.dart';

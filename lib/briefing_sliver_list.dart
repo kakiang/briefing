@@ -1,6 +1,7 @@
 import 'dart:async';
 
-import 'package:briefing/bloc_article_list.dart';
+import 'package:briefing/bloc_article.dart';
+import 'package:briefing/model/article.dart';
 import 'package:flutter/material.dart';
 
 // import 'package:briefing/model/article.dart';
@@ -20,7 +21,7 @@ class _BriefingSliverListState extends State<BriefingSliverList> {
 
   @override
   void dispose() {
-    _bloc.dispose();
+//    _bloc.dispose();
     super.dispose();
   }
 
@@ -69,7 +70,7 @@ class _BriefingSliverListState extends State<BriefingSliverList> {
 
     return SliverList(
       delegate: SliverChildListDelegate([
-        StreamBuilder<List<RssItem>>(
+        StreamBuilder<List<Article>>(
             stream: _bloc.rssItemList,
             initialData: List(),
             builder: (context, snapshot) {
@@ -110,8 +111,8 @@ class _BriefingSliverListState extends State<BriefingSliverList> {
                 return Center(
                   child: Container(
                     margin: EdgeInsets.all(8.0),
-                    width: 10,
-                    height: 10,
+                    width: 20,
+                    height: 20,
                     child: CircularProgressIndicator(
                       backgroundColor: Colors.white,
                       valueColor: AlwaysStoppedAnimation(Colors.blue),

@@ -1,9 +1,9 @@
-import 'package:briefing/model/article_rss.dart';
+import 'package:briefing/model/article.dart';
 import 'package:flutter/material.dart';
 import 'package:share/share.dart';
 
 class BottomSheetArticleMenu extends StatelessWidget {
-  final ArticleRss article;
+  final Article article;
 
   const BottomSheetArticleMenu({Key key, @required this.article})
       : super(key: key);

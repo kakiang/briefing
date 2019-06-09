@@ -17,7 +17,6 @@ class MainSliverAppBar extends StatelessWidget {
 
     return SliverAppBar(
       elevation: 0.0,
-      // iconTheme: IconThemeData().copyWith(color: Colors.blue),
       floating: true,
       snap: true,
       // brightness: Brightness.light,

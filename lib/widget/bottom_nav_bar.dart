@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:briefing/news_agency_sliver_list.dart';
+import 'package:briefing/channel_sliver_list.dart';
 
 class BottomNavBar extends StatelessWidget {
   const BottomNavBar({
@@ -14,13 +14,13 @@ class BottomNavBar extends StatelessWidget {
         splashColor: Colors.blue[300],
         radius: 505.0,
         // borderRadius: BorderRadius.circular(5.0),
-        customBorder:StadiumBorder(side: BorderSide(width: 5.0)),
+        customBorder: StadiumBorder(side: BorderSide(width: 5.0)),
         onTap: () {
-          if (id== 3) {
+          if (id == 3) {
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) {
-                  return NewsAgencySliverList();
+                  return ChannelSliverList();
                 },
               ),
             );
@@ -57,7 +57,8 @@ class BottomNavBar extends StatelessWidget {
             _buildButtonColumn(
                 icon: Icons.format_list_bulleted, label: 'Headlines'),
             _buildButtonColumn(icon: Icons.bookmark_border, label: 'Favorites'),
-            _buildButtonColumn(icon: Icons.filter_none, label: 'Newsagency',id:3),
+            _buildButtonColumn(
+                icon: Icons.filter_none, label: 'Newsagency', id: 3),
           ],
         ),
       ),

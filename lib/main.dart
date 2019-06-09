@@ -5,7 +5,7 @@ import 'package:briefing/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:briefing/widget/main_sliverappbar.dart';
-import 'package:briefing/news_agency_sliver_list.dart';
+import 'package:briefing/channel_sliver_list.dart';
 
 void main() {
   SystemChrome.setSystemUIOverlayStyle(
@@ -36,19 +36,22 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
   final String title;
+
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
-
+  static var briefingSliver = BriefingSliverList();
+  static var newsstandSliver = ChannelSliverList();
   var _pages = {
-    "Briefing": BriefingSliverList(),
-    "Newsstands": NewsAgencySliverList(),
+    "Briefing": briefingSliver,
+    "Newsstands": newsstandSliver,
   };
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,6 +62,14 @@ class _MyHomePageState extends State<MyHomePage> {
           _pages.values.elementAt(_selectedIndex)
         ],
       ),
+      floatingActionButton: _selectedIndex == 1
+          ? FloatingActionButton(
+              child: Icon(
+                Icons.add,
+                color: Theme.of(context).primaryColor,
+              ),
+              onPressed: () {})
+          : Container(),
       bottomNavigationBar: Theme(
         data: Theme.of(context).copyWith(
           canvasColor: Colors.white,
@@ -76,11 +87,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     Icons.person_outline,
                   ),
                   title: Text('Headlines')),
-//              BottomNavigationBarItem(
-//                  icon: Icon(Icons.format_list_bulleted),
-//                  title: Text('Headlines')),
-//              BottomNavigationBarItem(
-//                  icon: Icon(Icons.bookmark_border), title: Text('Favorites')),
               BottomNavigationBarItem(
                   icon: Icon(Icons.filter_none), title: Text('Newsstand')),
             ],
@@ -98,31 +104,3 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 }
-
-// class rssfeed {
-//   // RSS feed
-//   RssFeed devFeed() {
-//     var client = new http.Client();
-//     client
-//         .get("http://feeds.bbci.co.uk/news/world/africa/rss.xml")
-//         .then((response) {
-//       return response.body;
-//     }).then((bodyString) {
-//       var channel = new RssFeed.parse(bodyString);
-//       print(channel);
-//       return channel;
-//     });
-//   }
-
-//   // Atom feed
-//   RssFeed vergeFeed() {
-//     var client = new http.Client();
-//     client.get("https://www.theverge.com/rss/index.xml").then((response) {
-//       return response.body;
-//     }).then((bodyString) {
-//       var feed = new AtomFeed.parse(bodyString);
-//       print(feed);
-//       return feed;
-//     });
-//   }
-// }

@@ -1,9 +1,9 @@
-import 'package:briefing/model/article_rss.dart';
+import 'package:briefing/model/article.dart';
 import 'package:flutter/material.dart';
 import 'package:briefing/widget/bottomsheet_article_menu.dart';
 
 class ArticleBottomSection extends StatelessWidget {
-  final ArticleRss article;
+  final Article article;
 
   const ArticleBottomSection({Key key, @required this.article})
       : super(key: key);

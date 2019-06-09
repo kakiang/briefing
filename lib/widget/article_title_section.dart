@@ -1,11 +1,11 @@
-import 'package:briefing/model/article_rss.dart';
+import 'package:briefing/model/article.dart';
 import 'package:briefing/webview.dart';
 import 'package:briefing/widget/article_thumbnail.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class ArticleTitleSection extends StatelessWidget {
-  final ArticleRss article;
+  final Article article;
 
   const ArticleTitleSection({Key key, @required this.article})
       : super(key: key);
@@ -32,14 +32,14 @@ class ArticleTitleSection extends StatelessWidget {
               children: <Widget>[
                 Row(children: <Widget>[
                   CachedNetworkImage(
-                    imageUrl: article.agencyIcon ?? '',
+                    imageUrl: article.channel.iconUrl ?? '',
                     imageBuilder: (context, imageProvider) => Container(
                           width: 18.0,
                           height: 16.0,
                           decoration: BoxDecoration(
                               shape: BoxShape.rectangle,
                               image: DecorationImage(
-                                  image: imageProvider, fit: BoxFit.cover)),
+                                  image: imageProvider, fit: BoxFit.fill)),
                           margin: EdgeInsets.only(right: 8.0),
                         ),
                     placeholder: (context, url) => Container(),
@@ -48,7 +48,7 @@ class ArticleTitleSection extends StatelessWidget {
                   ),
                   Expanded(
                     child: Text(
-                      article.agency,
+                      article.channel.title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),

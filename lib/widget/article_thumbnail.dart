@@ -1,9 +1,9 @@
-import 'package:briefing/model/article_rss.dart';
+import 'package:briefing/model/article.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class ArticleThumbnail extends StatefulWidget {
-  final ArticleRss article;
+  final Article article;
 
   const ArticleThumbnail({Key key, @required this.article}) : super(key: key);
   @override
@@ -28,7 +28,7 @@ class _ArticleThumbnailState extends State<ArticleThumbnail> {
               ),
           placeholder: (context, url) => Container(),
           errorWidget: (context, url, error) => Container(),
-          fit: BoxFit.fill),
+          fit: BoxFit.cover),
     );
 
     // // This is an animated widget built into flutter.
@@ -48,31 +48,4 @@ class _ArticleThumbnailState extends State<ArticleThumbnail> {
     //   duration: Duration(milliseconds: 1000),
     // );
   }
-
-//   var articleThumbnail = Container(
-//     margin: EdgeInsets.only(left: 8.0, bottom: 8.0),
-//     width: 92.0,
-//     height: 92.0,
-//     decoration: BoxDecoration(
-//       shape: BoxShape.rectangle,
-//       // border: Border.all(style: BorderStyle.solid, width: 2.0),
-//       borderRadius: BorderRadius.circular(4.0),
-//       color: Colors.grey[200],
-//       image: DecorationImage(
-//         fit: BoxFit.cover,
-//         image: NetworkImage(widget.article.thumbnail ?? ''),
-//       ),
-//     ),
-//   );
-//   var placeholder = Container(
-// //      margin: EdgeInsets.only(left: 8.0, bottom: 8.0),
-// //      width: 92.0,
-// //      height: 92.0,
-// //      decoration: BoxDecoration(
-// //        color: Colors.grey,
-// //        shape: BoxShape.rectangle,
-// //        // border: Border.all(style: BorderStyle.solid, width: 2.0),
-// //        borderRadius: BorderRadius.circular(4.0),
-// //      ),
-//       );
 }
