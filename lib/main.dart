@@ -43,7 +43,10 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.dark.copyWith(
+      value: SystemUiOverlayStyle(
+          systemNavigationBarDividerColor: Colors.grey,
+          statusBarIconBrightness: Brightness.dark,
+          statusBarBrightness: Brightness.light,
           statusBarColor: Colors.white,
           systemNavigationBarColor: Colors.white,
           systemNavigationBarIconBrightness: Brightness.dark),
@@ -67,24 +70,26 @@ class _MyHomePageState extends State<MyHomePage> {
           data: Theme.of(context).copyWith(
             canvasColor: Colors.white,
             primaryColor: Colors.blue[700],
-            textTheme: Theme.of(context).textTheme.copyWith(
-                caption: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey[700])),
+//            textTheme: Theme.of(context).textTheme.copyWith(
+//                caption: TextStyle(
+//                    fontSize: 16,
+//                    fontWeight: FontWeight.w500,
+//                    color: Colors.grey[700])),
           ),
           child: BottomNavigationBar(
               items: <BottomNavigationBarItem>[
                 BottomNavigationBarItem(
-                    icon: Icon(
-                      Icons.person_outline,
-                    ),
-                    title: Text('Headlines')),
+                  icon: Icon(Icons.view_headline),
+                  title: Text('Headlines'),
+                ),
+//                BottomNavigationBarItem(
+//                  icon: Icon(Icons.collections_bookmark),
+//                  title: Text('Saved'),
+//                ),
                 BottomNavigationBarItem(
-                    icon: Icon(Icons.filter_none),
-                    title: Text(
-                      'Newsstand',
-                    )),
+                  icon: Icon(Icons.filter_none),
+                  title: Text('Newsstand'),
+                ),
               ],
               currentIndex: _selectedIndex,
               // fixedColor: Colors.blue[800],

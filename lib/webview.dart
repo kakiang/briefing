@@ -43,7 +43,10 @@ class _ArticleWebViewState extends State<ArticleWebView> {
     // );
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.dark.copyWith(
+      value: SystemUiOverlayStyle(
+          systemNavigationBarDividerColor: Colors.grey,
+          statusBarIconBrightness: Brightness.dark,
+          statusBarBrightness: Brightness.light,
           statusBarColor: Colors.white,
           systemNavigationBarColor: Colors.white,
           systemNavigationBarIconBrightness: Brightness.dark),

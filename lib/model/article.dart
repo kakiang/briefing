@@ -17,6 +17,7 @@ class Article {
   final List<String> mediaThumbnails;
   final String enclosure;
   final Channel channel;
+  bool bookmarked;
 
   Article(
       {this.id,
@@ -32,7 +33,8 @@ class Article {
       this.content,
       this.mediaThumbnails,
       this.enclosure,
-      this.channel});
+      this.channel,
+      this.bookmarked});
 
   factory Article.fromMap(Map<String, dynamic> data) {
     return Article(
@@ -49,7 +51,10 @@ class Article {
       content: data['content'],
       mediaThumbnails: data['media_thumbnails'].toString().split(';'),
       enclosure: data['enclosure'],
-      channel: Channel.fromMap(data['channel_id']),
+      channel: Channel.fromMap(
+        data['channel_id'],
+      ),
+      bookmarked: data['bookmarked'] == 1,
     );
   }
 
@@ -67,7 +72,8 @@ class Article {
       'content': content,
       'media_thumbnails': mediaThumbnails?.join(';'),
       'enclosure': enclosure,
-      'channel_id': channel.id
+      'channel_id': channel.id,
+      'bookmarked': bookmarked,
     };
   }
 
@@ -85,7 +91,8 @@ class Article {
         mediaThumbnails =
             item.media.thumbnails.map((thumbnail) => thumbnail.url).toList(),
         enclosure = item.enclosure?.url,
-        channel = channel;
+        channel = channel,
+        bookmarked = false;
 
   String get timeAgo {
     var formatter = new DateFormat("EEE, d MMM yyyy HH:mm:ss zzz");

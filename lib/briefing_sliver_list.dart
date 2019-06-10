@@ -72,8 +72,11 @@ class _BriefingSliverListState extends State<BriefingSliverList> {
             stream: _bloc.rssItemList,
             initialData: List(),
             builder: (context, snapshot) {
+              debugPrint('Has error: ${snapshot.hasError}');
+              debugPrint('Has data: ${snapshot.hasData}');
+              debugPrint('Snapshot Data length ${snapshot.data.length}');
+//              debugPrint('Snapshot Data ${snapshot.data}');
               if (snapshot.hasData && snapshot.data.length > 0) {
-                debugPrint("main:hasData ${snapshot.data.length}");
                 return ListView.builder(
                     physics: ScrollPhysics(),
                     shrinkWrap: true,

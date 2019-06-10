@@ -9,10 +9,11 @@ class MainSliverAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     void _modalMenu() {
       showModalBottomSheet<void>(
-          context: context,
-          builder: (BuildContext context) {
-            return BottomSheetMenu();
-          });
+        context: context,
+        builder: (BuildContext context) {
+          return BottomSheetMenu();
+        },
+      );
     }
 
     return SliverAppBar(
@@ -33,7 +34,7 @@ class MainSliverAppBar extends StatelessWidget {
       title: Text(title),
       actions: <Widget>[
         IconButton(
-          icon: Icon(Icons.account_circle, size: 28.0),
+          icon: Icon(Icons.account_circle, size: 32.0),
           onPressed: () {
             _modalMenu();
           },

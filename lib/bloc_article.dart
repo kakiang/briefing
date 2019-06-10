@@ -10,46 +10,52 @@ import 'package:webfeed/webfeed.dart';
 import 'package:briefing/database/database.dart';
 
 class ArticleListBloc {
-  final _rssItemListSubject = PublishSubject<List<Article>>();
-  List<Article> _rssItemList = <Article>[];
+  final _articleListSubject = PublishSubject<List<Article>>();
+  List<Article> _articleList = <Article>[];
 
   Map<String, List<Article>> _cached;
 
   ArticleListBloc() {
     _cached = Map();
     print("++++++ArticleListBloc");
-    _rssItemListSubject.add(_rssItemList);
+    _articleListSubject.add(_articleList);
     _fetchDB();
   }
 
-  Stream<List<Article>> get rssItemList => _rssItemListSubject.stream;
+  Stream<List<Article>> get rssItemList => _articleListSubject.stream;
 
   dispose() {
-    _rssItemListSubject.close();
+    _articleListSubject.close();
   }
 
   void _fetchDB() async {
     print("++++++BLOC ARTICLE ***_fetchDB***");
-    var local = await DBProvider.db.getAllArticles().then((list) {
+    var local = await DBProvider.db.getAllArticle().then((list) {
       return list.where((e) => e.isNew()).toList();
     });
     if (local.isNotEmpty) {
-      _rssItemList.addAll(local);
-      _rssItemListSubject.add(_rssItemList);
+      _articleList.addAll(local);
+      _articleListSubject.add(_articleList);
     } else {
-      _updateRssItemList();
+      _fetchNetwork();
     }
   }
 
-  _updateRssItemList() async {
+  Future<void> refresh() {
+    _fetchNetwork();
+    return null;
+  }
+
+  _fetchNetwork() async {
     print("++++++BLOC ARTICLE ***_updateRssItemList***");
     List<Channel> channels = await DBProvider.db.getAllStarredChannel();
     channels.forEach((channel) async {
       print("Channel ${channel.toString()}");
       var tmp = await _fetchRssFeed(channel);
       if (tmp.isNotEmpty) {
-        _rssItemList.addAll(tmp);
-        _rssItemListSubject.add(_rssItemList);
+        _articleList.clear();
+        _articleList.addAll(tmp);
+        _articleListSubject.add(_articleList);
 
         tmp.forEach((article) async {
           print('Channel id: ${article.channel.id}');

@@ -35,7 +35,7 @@ class ArticleTitleSection extends StatelessWidget {
                     imageUrl: article.channel.iconUrl ?? '',
                     imageBuilder: (context, imageProvider) => Container(
                           width: 18.0,
-                          height: 16.0,
+                          height: 14.0,
                           decoration: BoxDecoration(
                               shape: BoxShape.rectangle,
                               image: DecorationImage(

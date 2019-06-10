@@ -18,6 +18,12 @@ final channelList = {
       linkRss: "http://feeds.bbci.co.uk/news/world/rss.xml",
       iconUrl: 'https://news.bbcimg.co.uk/nol/shared/img/bbc_news_120x60.gif',
       starred: false),
+  "Jeune Afrique": Channel(
+      title: "Jeune Afrique",
+      link: "http://www.jeuneafrique.com",
+      linkRss: "http://www.jeuneafrique.com/feed/",
+      iconUrl: '',
+      starred: true),
   "BBC technology news": Channel(
       title: "BBC technology news",
       link: "bbc.co.uk",

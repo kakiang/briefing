@@ -54,6 +54,7 @@ class DBProvider {
         "content TEXT,"
         "media_thumbnails TEXT,"
         "enclosure TEXT,"
+        "bookmarked BIT,"
         "channel_id INTEGER REFERENCES channels(id));";
 
 //    var fk = "ALTER TABLE articles "
@@ -96,6 +97,7 @@ class DBProvider {
   }
 
   Future<int> insertArticleMap(Article article) async {
+    print('++++++$className insertArticleMap');
     final db = await database;
     return await db.insert(
       'articles',
@@ -110,8 +112,8 @@ class DBProvider {
     return await db.rawInsert(
         "INSERT INTO articles (id,title,description,link,categories,guid,"
         "pub_date,author,comments,url_source,content,media_thumbnails,"
-        "enclosure,channel_id)"
-        " VALUES (NULL,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        "enclosure,bookmarked,channel_id)"
+        " VALUES (NULL,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
         [
           article.title,
           article.description,
@@ -125,11 +127,12 @@ class DBProvider {
           article.content,
           article.mediaThumbnails.join(';'),
           article.enclosure,
+          article.bookmarked,
           article.channel.id
         ]);
   }
 
-  Future<List<Article>> getAllArticles() async {
+  Future<List<Article>> getAllArticle() async {
     print('++++++$className getAllArticles');
     final db = await database;
     var res = await db.query("articles");
@@ -178,7 +181,7 @@ class DBProvider {
 
   Future<int> deleteAllArticles() async {
     final db = await database;
-    return db.rawDelete("Delete * from articles");
+    return db.rawDelete("Delete from articles");
   }
 
   Future<List<Channel>> getAllChannel() async {
@@ -232,7 +235,7 @@ class DBProvider {
 
   Future<int> deleteAllChannels() async {
     final db = await database;
-    return db.rawDelete("Delete * from channels");
+    return db.rawDelete("Delete0 from channels");
   }
 
   Future close() async => db.close();
