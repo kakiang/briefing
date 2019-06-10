@@ -12,7 +12,6 @@ ThemeData buildAppTheme() {
         buttonColor: themeAppWhite100,
         textTheme: ButtonTextTheme.normal,
       ),
-
       scaffoldBackgroundColor: themeAppBackgroundWhite,
       cardColor: themeAppBackgroundWhite,
       textSelectionColor: themeAppGrey600,
@@ -21,7 +20,7 @@ ThemeData buildAppTheme() {
       textTheme: _buildAppTextTheme(base.textTheme),
       primaryTextTheme: _buildAppTextTheme(base.primaryTextTheme),
       accentTextTheme: _buildAppTextTheme(base.accentTextTheme),
-      accentIconTheme:IconThemeData().copyWith(color: Colors.blue),
+      accentIconTheme: IconThemeData().copyWith(color: Colors.blue),
       primaryIconTheme: base.iconTheme.copyWith(color: themeAppGrey800),
       inputDecorationTheme: InputDecorationTheme(
         border: OutlineInputBorder(),
@@ -36,22 +35,35 @@ TextTheme _buildAppTextTheme(TextTheme base) {
   return base
       .copyWith(
         headline: base.headline.copyWith(
+          fontFamily: 'Merriweather',
           fontWeight: FontWeight.w500,
         ),
-        //themeAppGrey600
+        title: base.title.copyWith(
+            fontFamily: 'Libre_Franklin',
+            fontSize: 22.0,
+            fontWeight: FontWeight.bold),
+        subhead: base.subhead.copyWith(
+            fontFamily: 'Merriweather',
+            fontWeight: FontWeight.w600,
+            fontSize: 16.0),
+        body2:
+            base.body2.copyWith(fontFamily: 'Libre_Franklin', fontSize: 14.0),
+        body1: base.body1.copyWith(fontFamily: 'Merriweather', fontSize: 16.0),
+        caption: base.caption.copyWith(
+          fontFamily: 'Libre_Franklin',
+          fontSize: 14.0,
+        ),
+        button:
+            base.button.copyWith(fontFamily: 'Libre_Franklin', fontSize: 14.0),
         subtitle: base.subtitle.copyWith(
+          fontFamily: 'Libre_Franklin',
           color: themeAppGrey600,
           fontWeight: FontWeight.w400,
         ),
-        title: base.title.copyWith(fontSize: 22.0),
-        caption: base.caption.copyWith(
-          fontWeight: FontWeight.w400,
-          fontSize: 14.0,
-        ),
       )
       .apply(
-        // fontFamily: 'Rubik',
-        displayColor: themeAppGrey800,
+        fontFamily: 'Merriweather',
+//        displayColor: themeAppGrey800,
         bodyColor: themeAppGrey800,
       );
 }

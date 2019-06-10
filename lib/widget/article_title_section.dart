@@ -51,6 +51,8 @@ class ArticleTitleSection extends StatelessWidget {
                       article.channel.title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                          fontFamily: 'Libre_Franklin', fontSize: 12.0),
                     ),
                   ),
                 ]),
@@ -60,10 +62,7 @@ class ArticleTitleSection extends StatelessWidget {
                       contentPadding: EdgeInsets.symmetric(horizontal: 1.0),
                       title: Text(article.title,
                           softWrap: true,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 18.0,
-                          ),
+                          style: Theme.of(context).textTheme.subhead,
                           maxLines: 4,
                           overflow: TextOverflow.ellipsis),
                       onTap: () {

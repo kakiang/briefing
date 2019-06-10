@@ -4,10 +4,8 @@ import 'package:briefing/bloc_article.dart';
 import 'package:briefing/model/article.dart';
 import 'package:flutter/material.dart';
 
-// import 'package:briefing/model/article.dart';
 import 'package:briefing/briefing_card.dart';
 import 'package:briefing/webview.dart';
-import 'package:webfeed/webfeed.dart';
 
 class BriefingSliverList extends StatefulWidget {
   const BriefingSliverList({Key key}) : super(key: key);

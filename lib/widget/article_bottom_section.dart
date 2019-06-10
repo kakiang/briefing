@@ -22,7 +22,10 @@ class ArticleBottomSection extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Text(article.timeAgo, style: Theme.of(context).textTheme.subtitle),
+          Text(
+            article.timeAgo,
+            style: TextStyle(fontFamily: 'Libre_Franklin', fontSize: 12.0),
+          ),
           InkWell(
             child: Icon(
               Icons.more_vert,
