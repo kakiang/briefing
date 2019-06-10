@@ -64,38 +64,103 @@ class _MyHomePageState extends State<MyHomePage> {
                   Icons.add,
                   color: Theme.of(context).primaryColor,
                 ),
-                onPressed: () {})
+                onPressed: () {},
+              )
             : Container(),
-        bottomNavigationBar: Theme(
-          data: Theme.of(context).copyWith(
-            canvasColor: Colors.white,
-            primaryColor: Colors.blue[700],
-//            textTheme: Theme.of(context).textTheme.copyWith(
-//                caption: TextStyle(
-//                    fontSize: 16,
-//                    fontWeight: FontWeight.w500,
-//                    color: Colors.grey[700])),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+        bottomNavigationBar: BottomAppBar(
+          elevation: 12.0,
+          shape: _selectedIndex == 1 ? CircularNotchedRectangle() : null,
+          child: Row(
+            children: <Widget>[
+              IconButton(
+                  icon: Icon(Icons.menu),
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (BuildContext builder) {
+                        return Theme(
+                          data: Theme.of(context).copyWith(
+                              canvasColor: Colors.white,
+                              textTheme: Theme.of(context).textTheme.copyWith(
+                                  subhead: Theme.of(context)
+                                      .textTheme
+                                      .subhead
+                                      .copyWith(
+                                        fontWeight: FontWeight.normal,
+                                      ))),
+                          child: Container(
+                            height: 150.0,
+                            decoration: new BoxDecoration(
+                              color: Colors.white,
+
+                              // shape: BoxShape.rectangle,
+                              borderRadius: BorderRadius.only(
+                                topLeft: const Radius.circular(10.0),
+                                topRight: const Radius.circular(10.0),
+                              ),
+                            ),
+                            child: Drawer(
+                              child: Wrap(
+                                children: ListTile.divideTiles(
+                                    color: Colors.yellow,
+                                    context: context,
+                                    tiles: [
+                                      ListTile(
+                                        leading: Icon(Icons.view_list),
+                                        title: Text('Headlines'),
+                                        onTap: () {
+                                          _onItemTapped(0);
+                                        },
+                                      ),
+                                      ListTile(
+                                        leading: Icon(Icons.library_books),
+                                        title: Text('Newsstand'),
+                                        onTap: () {
+                                          _onItemTapped(1);
+                                        },
+                                      ),
+                                    ]).toList(),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  })
+            ],
           ),
-          child: BottomNavigationBar(
-              items: <BottomNavigationBarItem>[
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.view_headline),
-                  title: Text('Headlines'),
-                ),
-//                BottomNavigationBarItem(
-//                  icon: Icon(Icons.collections_bookmark),
-//                  title: Text('Saved'),
-//                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.filter_none),
-                  title: Text('Newsstand'),
-                ),
-              ],
-              currentIndex: _selectedIndex,
-              // fixedColor: Colors.blue[800],
-              onTap: _onItemTapped,
-              type: BottomNavigationBarType.fixed),
         ),
+//        bottomNavigationBar: Theme(
+//          data: Theme.of(context).copyWith(
+//            canvasColor: Colors.white,
+//            primaryColor: Colors.blue[700],
+////            textTheme: Theme.of(context).textTheme.copyWith(
+////                caption: TextStyle(
+////                    fontSize: 16,
+////                    fontWeight: FontWeight.w500,
+////                    color: Colors.grey[700])),
+//          ),
+//          child: BottomNavigationBar(
+//              items: <BottomNavigationBarItem>[
+//                BottomNavigationBarItem(
+//                  icon: Icon(Icons.view_headline),
+//                  title: Text('Headlines'),
+//                ),
+////                BottomNavigationBarItem(
+////                  icon: Icon(Icons.collections_bookmark),
+////                  title: Text('Saved'),
+////                ),
+//                BottomNavigationBarItem(
+//                  icon: Icon(Icons.filter_none),
+//                  title: Text('Newsstand'),
+//                ),
+//              ],
+//              currentIndex: _selectedIndex,
+//              // fixedColor: Colors.blue[800],
+//              onTap: _onItemTapped,
+//              type: BottomNavigationBarType.fixed),
+//        ),
       ),
     );
   }
@@ -104,5 +169,6 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _selectedIndex = index;
     });
+    Navigator.pop(context);
   }
 }
