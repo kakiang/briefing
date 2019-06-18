@@ -1,11 +1,10 @@
 import 'dart:async';
 
 import 'package:briefing/bloc_article.dart';
-import 'package:briefing/model/article.dart';
-import 'package:flutter/material.dart';
-
 import 'package:briefing/briefing_card.dart';
+import 'package:briefing/model/article.dart';
 import 'package:briefing/webview.dart';
+import 'package:flutter/material.dart';
 
 class BriefingSliverList extends StatefulWidget {
   const BriefingSliverList({Key key}) : super(key: key);
@@ -19,29 +18,15 @@ class _BriefingSliverListState extends State<BriefingSliverList> {
 
   @override
   void dispose() {
-//    _bloc.dispose();
+    _bloc.dispose();
     super.dispose();
   }
 
-//  RefreshIndicator(
-//  color: Colors.blue[800],
-//  backgroundColor: Colors.white,
-//  onRefresh: () async {
-//  // less elegant and more expedient and, I hope, momentarily
-//  // solution to the problem that the current context doesn't
-//  // contain a Scaffold.
-//  _scaffoldKey.currentState.showSnackBar(
-//  SnackBar(content: Text('Refresh feature to be implemented')),
-//  );
-//  await new Future.delayed(const Duration(seconds: 1));
-//},
-
   @override
   Widget build(BuildContext context) {
-    Widget loadingInfo(String message) {
+    Widget errorWidget(String message) {
       return Container(
-        height: 48.0,
-        padding: EdgeInsets.all(8.0),
+        padding: EdgeInsets.all(16.0),
         decoration: BoxDecoration(
           color: Colors.blueGrey,
         ),
@@ -51,14 +36,17 @@ class _BriefingSliverListState extends State<BriefingSliverList> {
             Padding(
               padding: const EdgeInsets.only(right: 8.0),
               child: Icon(
-                Icons.error,
+                Icons.warning,
                 color: Colors.white,
               ),
             ),
             Expanded(
               child: Text(
                 message,
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 15.0,
+                    fontFamily: 'Libre_Franklin'),
               ),
             ),
           ],
@@ -69,33 +57,33 @@ class _BriefingSliverListState extends State<BriefingSliverList> {
     return SliverList(
       delegate: SliverChildListDelegate([
         StreamBuilder<List<Article>>(
-            stream: _bloc.rssItemList,
+            stream: _bloc.articleListObservable,
             initialData: List(),
             builder: (context, snapshot) {
-              debugPrint('Has error: ${snapshot.hasError}');
-              debugPrint('Has data: ${snapshot.hasData}');
-              debugPrint('Snapshot Data length ${snapshot.data.length}');
-//              debugPrint('Snapshot Data ${snapshot.data}');
+              debugPrint("!!!snapshot state: ${snapshot.connectionState}!!!");
               if (snapshot.hasData && snapshot.data.length > 0) {
                 return ListView.builder(
+                    padding:
+                        EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
                     physics: ScrollPhysics(),
                     shrinkWrap: true,
                     itemCount: snapshot.data.length,
                     itemBuilder: (BuildContext context, int index) {
                       return Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+//                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
                         child: InkWell(
                           child: Column(
                             children: <Widget>[
-                              BriefingCard(article: snapshot.data[index]),
-//                              if (index + 1 < snapshot.data.length) Divider()
+                              BriefingCard(
+                                  article: snapshot.data.elementAt(index)),
                             ],
                           ),
                           onTap: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) {
-                                  return ArticleWebView(snapshot.data[index]);
+                                  return ArticleWebView(
+                                      snapshot.data.elementAt(index));
                                 },
                               ),
                             );
@@ -104,20 +92,18 @@ class _BriefingSliverListState extends State<BriefingSliverList> {
                       );
                     });
               } else if (snapshot.hasError) {
-                debugPrint("main:hasError");
-                return loadingInfo("Can't connect to the internet, try again.");
+                debugPrint("!!!snapshot error ${snapshot.error.toString()}");
+                return errorWidget("${snapshot.error}");
               } else {
-                debugPrint(
-                    "LinearProgressIndicator state: ${snapshot.connectionState}");
                 return Center(
                   child: Container(
                     margin: EdgeInsets.all(8.0),
                     width: 20,
                     height: 20,
                     child: CircularProgressIndicator(
-                      backgroundColor: Colors.white,
-                      valueColor: AlwaysStoppedAnimation(Colors.blue),
-                    ),
+//                      backgroundColor: Colors.white,
+//                      valueColor: AlwaysStoppedAnimation(Theme.of(context).accentColor),
+                        ),
                   ),
                 );
               }

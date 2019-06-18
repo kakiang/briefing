@@ -9,6 +9,8 @@ const themeAppGrey600 = const Color(0xFF757575);
 const themeAppGrey700 = const Color(0xFF616161);
 const themeAppGrey800 = const Color(0xFF424242);
 
+const themeAppIndigo = Colors.indigo;
+
 const themeAppErrorRed = const Color(0xFFC5032B);
 
 const themeAppSurfaceWhite = const Color(0xFFFFFBFA);

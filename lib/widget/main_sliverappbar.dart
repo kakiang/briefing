@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:briefing/widget/bottomsheet_menu.dart';
+import 'package:flutter/material.dart';
 
 class MainSliverAppBar extends StatelessWidget {
   final String title;
@@ -17,9 +17,8 @@ class MainSliverAppBar extends StatelessWidget {
     }
 
     return SliverAppBar(
-      elevation: 0.0,
-      floating: true,
-      snap: true,
+      elevation: 5.0,
+      pinned: true,
       // brightness: Brightness.light,
       leading: IconButton(
         icon: Icon(
@@ -33,11 +32,14 @@ class MainSliverAppBar extends StatelessWidget {
       centerTitle: true,
       title: Text(title),
       actions: <Widget>[
-        IconButton(
-          icon: Icon(Icons.account_circle, size: 32.0),
-          onPressed: () {
-            _modalMenu();
-          },
+        Container(
+          margin: EdgeInsets.only(right: 6.0),
+          child: IconButton(
+            icon: Icon(Icons.account_circle, size: 32.0),
+            onPressed: () {
+              _modalMenu();
+            },
+          ),
         ),
       ],
     );

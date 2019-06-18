@@ -7,10 +7,11 @@ description: A new Flutter project.
 # Both the version and the builder number may be overridden in flutter
 # build by specifying --build-name and --build-number, respectively.
 # Read more about versioning at semver.org.
+# sdk: ">=2.1.0 <3.0.0"
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.2.2 <3.0.0"
 
 dependencies:
   flutter:
@@ -19,10 +20,12 @@ dependencies:
   share: 0.5.3
   webview_flutter: ^0.3.5+4
   intl: ^0.15.8
+  connectivity: ^0.4.3+2
   webfeed: ^0.4.2
   http: ^0.12.0+2
   rxdart: ^0.22.0
   cached_network_image: ^0.8.0
+  pull_to_refresh: ^1.4.4
   cupertino_icons: ^0.1.2
 
 dev_dependencies:
@@ -44,12 +47,19 @@ flutter:
         - asset: assets/fonts/Merriweather/Merriweather-Regular.ttf
         - asset: assets/fonts/Merriweather/Merriweather-Italic.ttf
         - asset: assets/fonts/Merriweather/Merriweather-Bold.ttf
-          weight: 400
+          weight: 700
           style: italic
     - family: Libre_Franklin
       fonts:
         - asset: assets/fonts/Libre_Franklin/LibreFranklin-Regular.ttf
         - asset: assets/fonts/Libre_Franklin/LibreFranklin-Bold.ttf
+          weight: 700
+    - family: Work_Sans
+      fonts:
+        - asset: assets/fonts/Crimson_Text/CrimsonText-Regular.ttf
+        - asset: assets/fonts/Crimson_Text/CrimsonText-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Crimson_Text/CrimsonText-Bold.ttf
           weight: 700
   #
   # For details regarding fonts from package dependencies,

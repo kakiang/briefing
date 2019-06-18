@@ -11,7 +11,7 @@ class BriefingCard extends StatefulWidget {
 
   @override
   BriefingCardState createState() {
-    return new BriefingCardState();
+    return BriefingCardState();
   }
 }
 
@@ -19,15 +19,12 @@ class BriefingCardState extends State<BriefingCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-      padding: EdgeInsets.symmetric(vertical: 4.0),
+      margin: EdgeInsets.only(bottom: 4.0),
+      padding: EdgeInsets.fromLTRB(4.0, 0.0, 4.0, 4.0),
       child: Column(
         children: <Widget>[
           ArticleTitleSection(article: widget.article),
           ArticleBottomSection(article: widget.article),
-          SizedBox(
-            height: 8.0,
-          ),
           Divider()
         ],
       ),

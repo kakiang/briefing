@@ -51,9 +51,16 @@ class Article {
       content: data['content'],
       mediaThumbnails: data['media_thumbnails'].toString().split(';'),
       enclosure: data['enclosure'],
-      channel: Channel.fromMap(
-        data['channel_id'],
-      ),
+      channel: Channel.fromMap({
+        'id': data['channel_id'],
+        'title': data['c_title'],
+        'link': data['c_link'],
+        'lastBuildDate': data['last_build_date'],
+        'language': data['language'],
+        'linkRss': data['link_rss'],
+        'iconUrl': data['icon_url'],
+        'favorite': data['favorite'] == 1,
+      }),
       bookmarked: data['bookmarked'] == 1,
     );
   }
@@ -95,7 +102,7 @@ class Article {
         bookmarked = false;
 
   String get timeAgo {
-    var formatter = new DateFormat("EEE, d MMM yyyy HH:mm:ss zzz");
+    var formatter = DateFormat("EEE, d MMM yyyy HH:mm:ss zzz");
 
     DateTime parsedDate = formatter.parse(pubDate);
     Duration duration = DateTime.now().difference(parsedDate);
@@ -116,12 +123,11 @@ class Article {
   }
 
   bool isNew() {
-    var formatter = new DateFormat("EEE, d MMM yyyy HH:mm:ss zzz");
+    var formatter = DateFormat("EEE, d MMM yyyy HH:mm:ss zzz");
 
     DateTime parsedDate = formatter.parse(pubDate);
     Duration duration = DateTime.now().difference(parsedDate);
-    if (duration.inHours < 48) {
-      print('new ${duration.inHours}');
+    if (duration.inHours < 24) {
       return true;
     }
 //    print('old ${duration.inHours}');

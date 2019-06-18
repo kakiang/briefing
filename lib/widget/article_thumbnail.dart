@@ -14,7 +14,7 @@ class _ArticleThumbnailState extends State<ArticleThumbnail> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(right: 8.0, left: 8.0),
+//      padding: EdgeInsets.only(right: 8.0, left: 8.0),
       child: CachedNetworkImage(
           imageUrl: widget.article.thumbnail ?? '',
           imageBuilder: (context, imageProvider) => Container(

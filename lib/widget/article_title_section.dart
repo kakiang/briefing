@@ -22,59 +22,59 @@ class ArticleTitleSection extends StatelessWidget {
       );
     }
 
-    return Container(
-      margin: EdgeInsets.only(bottom: 6.0),
-      child: Row(
-        children: <Widget>[
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Row(children: <Widget>[
-                  CachedNetworkImage(
-                    imageUrl: article.channel.iconUrl ?? '',
-                    imageBuilder: (context, imageProvider) => Container(
-                          width: 18.0,
-                          height: 14.0,
-                          decoration: BoxDecoration(
-                              shape: BoxShape.rectangle,
-                              image: DecorationImage(
-                                  image: imageProvider, fit: BoxFit.fill)),
-                          margin: EdgeInsets.only(right: 8.0),
-                        ),
-                    placeholder: (context, url) => Container(),
-                    errorWidget: (context, url, error) => Container(),
-                    fit: BoxFit.cover,
+    return Row(
+      children: <Widget>[
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Row(children: <Widget>[
+                CachedNetworkImage(
+                  imageUrl: article.channel.iconUrl ?? '',
+                  imageBuilder: (context, imageProvider) => Container(
+                        width: 18.0,
+                        height: 14.0,
+                        decoration: BoxDecoration(
+                            shape: BoxShape.rectangle,
+                            image: DecorationImage(
+                                image: imageProvider, fit: BoxFit.fill)),
+                        margin: EdgeInsets.only(right: 8.0),
+                      ),
+                  placeholder: (context, url) => Container(),
+                  errorWidget: (context, url, error) => Container(),
+                  fit: BoxFit.cover,
+                ),
+                Expanded(
+                  child: Text(
+                    article.channel.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style:
+                        TextStyle(fontFamily: 'Libre_Franklin', fontSize: 12.0),
                   ),
-                  Expanded(
-                    child: Text(
-                      article.channel.title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                          fontFamily: 'Libre_Franklin', fontSize: 12.0),
-                    ),
-                  ),
-                ]),
-                Container(
-                  padding: EdgeInsets.only(top: 4.0),
-                  child: ListTile(
-                      contentPadding: EdgeInsets.symmetric(horizontal: 1.0),
-                      title: Text(article.title,
-                          softWrap: true,
-                          style: Theme.of(context).textTheme.subhead,
-                          maxLines: 4,
-                          overflow: TextOverflow.ellipsis),
-                      onTap: () {
-                        showArticleWebView();
-                      }),
-                )
-              ],
-            ),
+                ),
+              ]),
+              Container(
+                padding: EdgeInsets.fromLTRB(0.0, 4.0, 8.0, 4.0),
+                child: ListTile(
+                    contentPadding: EdgeInsets.symmetric(horizontal: 1.0),
+                    title: Text(article.title,
+                        softWrap: true,
+                        style: Theme.of(context).textTheme.subhead.copyWith(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 22.0,
+                            ),
+                        maxLines: 4,
+                        overflow: TextOverflow.ellipsis),
+                    onTap: () {
+                      showArticleWebView();
+                    }),
+              )
+            ],
           ),
-          ArticleThumbnail(article: article),
-        ],
-      ),
+        ),
+        ArticleThumbnail(article: article),
+      ],
     );
   }
 }

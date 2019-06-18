@@ -2,117 +2,132 @@ import 'dart:async';
 
 import 'package:briefing/model/article.dart';
 import 'package:briefing/model/channel.dart';
-import 'package:rxdart/rxdart.dart';
-
+import 'package:briefing/model/database/repository.dart';
+import 'package:briefing/util/rate_limiter.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:rxdart/rxdart.dart';
 import 'package:webfeed/webfeed.dart';
 
-import 'package:briefing/database/database.dart';
-
 class ArticleListBloc {
-  final _articleListSubject = PublishSubject<List<Article>>();
+  RateLimiter<String> rateLimit = RateLimiter(2);
+  final _articleListSubject = BehaviorSubject<List<Article>>();
+//  HashSet<Article> _articleList = HashSet();
   List<Article> _articleList = <Article>[];
 
-  Map<String, List<Article>> _cached;
-
   ArticleListBloc() {
-    _cached = Map();
-    print("++++++ArticleListBloc");
     _articleListSubject.add(_articleList);
-    _fetchDB();
+    _loadFromDb();
+
+    if (rateLimit.shouldFetch('ArticleList')) {
+      _fetchFromNetwork();
+    }
   }
 
-  Stream<List<Article>> get rssItemList => _articleListSubject.stream;
+  Stream<List<Article>> get articleListObservable => _articleListSubject.stream;
 
   dispose() {
     _articleListSubject.close();
   }
 
-  void _fetchDB() async {
-    print("++++++BLOC ARTICLE ***_fetchDB***");
-    var local = await DBProvider.db.getAllArticle().then((list) {
-      return list.where((e) => e.isNew()).toList();
-    });
-    if (local.isNotEmpty) {
-      _articleList.addAll(local);
-      _articleListSubject.add(_articleList);
-    } else {
-      _fetchNetwork();
+  Future<void> _loadFromDb() async {
+    try {
+      var localData = await RepositoryArticle.getAllArticle();
+      print('localData isEmpty: ${localData.isEmpty}');
+      if (localData.isNotEmpty) {
+        _articleList.clear();
+        _articleList.addAll(localData);
+        _articleListSubject.sink.add(_articleList);
+      }
+    } catch (e) {
+      print('=== _loadFromDb $e');
     }
   }
 
-  Future<void> refresh() {
-    _fetchNetwork();
-    return null;
+  Future<void> _fetchFromNetwork() async {
+    List<Channel> channels = await RepositoryChannel.getAllFavoriteChannel();
+
+    if (channels.isNotEmpty) {
+      List<Article> articles = await _fetchAllChannels(channels);
+
+      if (articles.isNotEmpty) {
+//        _articleList.addAll(articles);
+//        _articleListSubject.add(_articleList);
+        await saveResult(articles);
+        await _loadFromDb();
+      } else {
+        sendErrorMessage();
+      }
+    }
   }
 
-  _fetchNetwork() async {
-    print("++++++BLOC ARTICLE ***_updateRssItemList***");
-    List<Channel> channels = await DBProvider.db.getAllStarredChannel();
-    channels.forEach((channel) async {
-      print("Channel ${channel.toString()}");
-      var tmp = await _fetchRssFeed(channel);
-      if (tmp.isNotEmpty) {
-        _articleList.clear();
-        _articleList.addAll(tmp);
-        _articleListSubject.add(_articleList);
-
-        tmp.forEach((article) async {
-          print('Channel id: ${article.channel.id}');
-          int id = await DBProvider.db.insertArticleMap(article);
-          print('Article $id inserted');
-        });
+  Future<List<Article>> _fetchAllChannels(List<Channel> channels) async {
+    List<Article> articles = [];
+    try {
+      var futures = channels.map((channel) => _fetchRssFeed(channel));
+      final result = await Future.wait(futures);
+      print('_fetchAllChannels result.isEmpty ${result?.isEmpty}');
+      if (result != null && result.length > 0) {
+        articles = await compute(prepareItems, result);
       }
-    });
+    } catch (e) {
+      print('=== _fetchAllChannels Error $e');
+      sendErrorMessage();
+    }
+    print('Future.wait length: ${articles?.length}');
+    return articles;
   }
 
   Future<List<Article>> _fetchRssFeed(Channel channel) async {
-    print("+++++BLOC_ARTICLE _fetchRssItem ${channel.linkRss}");
-    if (!_cached.containsKey(channel.linkRss)) {
+    print('=== _fetchRssFeed === ${channel.link} ${channel.lastBuildDate} ===');
+    List<Article> articles = [];
+
+    try {
       final response = await http.get(channel.linkRss);
       if (response.statusCode == 200) {
         var rssFeed = RssFeed.parse(response.body);
 
         List<RssItem> items = rssFeed.items;
-        List<Article> articles = [];
-
         items.forEach((rssItem) {
           articles.add(Article.fromRssItem(rssItem, channel));
         });
-        print('channel.title==: ${rssFeed.title.toString()}');
-        _cached[channel.linkRss] = articles;
       } else {
-        print('Http Error ${response.statusCode} $channel.linkRss');
+        print('Http Error ${response.statusCode} ${channel.linkRss}');
       }
-      print("not cached ${channel.linkRss}");
+    } catch (e) {
+      print('=== _fetchRssFeed Error $e');
     }
-    return _cached[channel.linkRss];
+    return articles;
   }
 
-  Future<List<Article>> _fetchArticleList() async {
-    var channelListStarred =
-        channelList.values.where((channel) => channel.starred);
-    var allFutureArticleList =
-        channelListStarred.map((ag) => _fetchRssFeed(ag));
-    final allArticleList = await Future.wait(allFutureArticleList);
-    print('Future.wait length: ${allArticleList.length}');
-    List<Article> articleList = <Article>[];
-    allArticleList.forEach((list) {
-      print('list.isEmpty ${list.isEmpty}');
-      articleList.addAll(list.where((item) => item.isNew()));
-    });
-    print('articleRssList length: ${articleList.length}');
-    return articleList;
+  saveResult(List<Article> articles) async {
+    await RepositoryArticle.insertArticleList(articles);
   }
 
-//  List<ArticleRss> prepareItems(String responseBody) {
-//    var channel = RssFeed.parse(responseBody);
-//    List<RssItem> items = channel.items;
-//    List<ArticleRss> articles = [];
-//
-//    items.forEach((f) {
-//      articles.add(ArticleRss.fromParent(f, channel));
-//    });
-//    return articles;
-//  }
+  void sendErrorMessage() {
+    print('!!!send error');
+    if (_articleList.isEmpty)
+      _articleListSubject
+          .addError(BriefingError("Can't connect to the internet!"));
+  }
+}
+
+List<Article> prepareItems(List<List<Article>> result) {
+  List<Article> articles = [];
+  result.forEach((list) {
+    print('===prepareItems_fetchAllChannels list.isEmpty ${list.isEmpty}');
+    articles.addAll(list.where((article) => article.isNew()));
+  });
+  return articles;
+}
+
+class BriefingError extends Error {
+  final String message;
+
+  BriefingError(this.message);
+
+  @override
+  String toString() {
+    return '$message';
+  }
 }
