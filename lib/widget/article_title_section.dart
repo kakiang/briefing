@@ -32,17 +32,18 @@ class ArticleTitleSection extends StatelessWidget {
                 CachedNetworkImage(
                   imageUrl: article.channel.iconUrl ?? '',
                   imageBuilder: (context, imageProvider) => Container(
-                        width: 18.0,
-                        height: 14.0,
+                        width: 28.0,
+                        height: 18.0,
                         decoration: BoxDecoration(
                             shape: BoxShape.rectangle,
+                            border: Border.all(color: Colors.grey[300]),
+                            borderRadius: BorderRadius.circular(3.0),
                             image: DecorationImage(
                                 image: imageProvider, fit: BoxFit.fill)),
                         margin: EdgeInsets.only(right: 8.0),
                       ),
                   placeholder: (context, url) => Container(),
                   errorWidget: (context, url, error) => Container(),
-                  fit: BoxFit.cover,
                 ),
                 Expanded(
                   child: Text(
@@ -61,9 +62,7 @@ class ArticleTitleSection extends StatelessWidget {
                     title: Text(article.title,
                         softWrap: true,
                         style: Theme.of(context).textTheme.subhead.copyWith(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 22.0,
-                            ),
+                            fontWeight: FontWeight.w700, fontSize: 20),
                         maxLines: 4,
                         overflow: TextOverflow.ellipsis),
                     onTap: () {

@@ -47,7 +47,6 @@ TextTheme _buildAppTextTheme(TextTheme base) {
         ),
         subhead: base.subhead.copyWith(
           fontFamily: 'Work_Sans',
-          fontWeight: FontWeight.w600,
           fontSize: 18.0,
         ),
         body2: base.body2.copyWith(

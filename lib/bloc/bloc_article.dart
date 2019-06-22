@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:briefing/bloc/bloc_provider.dart';
 import 'package:briefing/model/article.dart';
 import 'package:briefing/model/channel.dart';
 import 'package:briefing/model/database/repository.dart';
@@ -9,77 +10,94 @@ import 'package:http/http.dart' as http;
 import 'package:rxdart/rxdart.dart';
 import 'package:webfeed/webfeed.dart';
 
-class ArticleListBloc {
-  RateLimiter<String> rateLimit = RateLimiter(2);
+class ArticleListBloc extends BlocBase {
+  RateLimiter rateLimit = getRateLimiter;
   final _articleListSubject = BehaviorSubject<List<Article>>();
-//  HashSet<Article> _articleList = HashSet();
   List<Article> _articleList = <Article>[];
 
   ArticleListBloc() {
     _articleListSubject.add(_articleList);
-    _loadFromDb();
+    _init();
+  }
 
-    if (rateLimit.shouldFetch('ArticleList')) {
-      _fetchFromNetwork();
+  Future<void> _init() async {
+    await _loadFromDb();
+    if (shouldFetch()) {
+      await _fetchFromNetwork();
     }
   }
 
   Stream<List<Article>> get articleListObservable => _articleListSubject.stream;
 
+  refresh() async {
+    print(':::refresh:::');
+    _articleListSubject.add(_articleList);
+    await _fetchFromNetwork();
+  }
+
+  @override
   dispose() {
     _articleListSubject.close();
   }
 
   Future<void> _loadFromDb() async {
+    print('BlocArticle._loadFromDb starts');
     try {
+      print('->await RepositoryArticle.getAllArticle starts');
       var localData = await RepositoryArticle.getAllArticle();
-      print('localData isEmpty: ${localData.isEmpty}');
+      print('->await RepositoryArticle.getAllArticle done');
+      print('->RepositoryArticle.getAllArticle isEmpty: ${localData.isEmpty}');
       if (localData.isNotEmpty) {
         _articleList.clear();
         _articleList.addAll(localData);
-        _articleListSubject.sink.add(_articleList);
+        _articleListSubject.add(_articleList);
+      } else {
+        sendErrorMessage('No article in DB');
       }
     } catch (e) {
       print('=== _loadFromDb $e');
     }
+    print('BlocArticle._loadFromDb end');
   }
 
   Future<void> _fetchFromNetwork() async {
+    print('BlocArticle.fetchFromNetwork start');
     List<Channel> channels = await RepositoryChannel.getAllFavoriteChannel();
 
     if (channels.isNotEmpty) {
       List<Article> articles = await _fetchAllChannels(channels);
 
       if (articles.isNotEmpty) {
-//        _articleList.addAll(articles);
-//        _articleListSubject.add(_articleList);
         await saveResult(articles);
         await _loadFromDb();
       } else {
-        sendErrorMessage();
+        if (_articleList.isEmpty) sendErrorMessage('No article');
       }
+    } else {
+      if (_articleList.isEmpty) sendErrorMessage('No channel');
     }
   }
 
   Future<List<Article>> _fetchAllChannels(List<Channel> channels) async {
     List<Article> articles = [];
     try {
-      var futures = channels.map((channel) => _fetchRssFeed(channel));
+      var futures =
+          channels.map((channel) async => await _fetchRssFeed(channel));
       final result = await Future.wait(futures);
-      print('_fetchAllChannels result.isEmpty ${result?.isEmpty}');
+      print('_fetchAllChannels result.length ${result?.length}');
       if (result != null && result.length > 0) {
         articles = await compute(prepareItems, result);
       }
     } catch (e) {
       print('=== _fetchAllChannels Error $e');
-      sendErrorMessage();
+      sendErrorMessage('fetchAllChannels Error $e');
     }
     print('Future.wait length: ${articles?.length}');
     return articles;
   }
 
   Future<List<Article>> _fetchRssFeed(Channel channel) async {
-    print('=== _fetchRssFeed === ${channel.link} ${channel.lastBuildDate} ===');
+    print('=== _fetchRssFeed === link:${channel?.linkRss}');
     List<Article> articles = [];
 
     try {
@@ -87,7 +105,7 @@ class ArticleListBloc {
       if (response.statusCode == 200) {
         var rssFeed = RssFeed.parse(response.body);
 
-        List<RssItem> items = rssFeed.items;
+        List<RssItem> items = rssFeed?.items;
         items.forEach((rssItem) {
           articles.add(Article.fromRssItem(rssItem, channel));
         });
@@ -95,7 +113,7 @@ class ArticleListBloc {
         print('Http Error ${response.statusCode} ${channel.linkRss}');
       }
     } catch (e) {
-      print('=== _fetchRssFeed Error $e');
+      print('=== _fetchRssFeed Error ${e.toString()}');
     }
     return articles;
   }
@@ -104,18 +122,33 @@ class ArticleListBloc {
     await RepositoryArticle.insertArticleList(articles);
   }
 
-  void sendErrorMessage() {
-    print('!!!send error');
+  bool shouldFetch() {
+    if (rateLimit.shouldFetch('ArticleList')) {
+      return true;
+    }
+    return false;
+  }
+
+//  Future<bool> shouldFetch() async {
+//    var connectivityResult = await (Connectivity().checkConnectivity());
+//    if (!(connectivityResult == ConnectivityResult.none) &&
+//        (rateLimit.shouldFetch('ArticleList'))) {
+//      return true;
+//    }
+//    return false;
+//  }
+
+  void sendErrorMessage([String message = "Can't connect to the internet!"]) {
+    print('sendErrorMessage');
     if (_articleList.isEmpty)
-      _articleListSubject
-          .addError(BriefingError("Can't connect to the internet!"));
+      _articleListSubject.addError(BriefingError(message));
   }
 }
 
 List<Article> prepareItems(List<List<Article>> result) {
   List<Article> articles = [];
-  result.forEach((list) {
-    print('===prepareItems_fetchAllChannels list.isEmpty ${list.isEmpty}');
+  result.where((list) => list != null).forEach((list) {
+    print('===prepareItems_fetchAllChannels list.isEmpty ${list?.isEmpty}');
     articles.addAll(list.where((article) => article.isNew()));
   });
   return articles;

@@ -19,23 +19,21 @@ class ArticleBottomSection extends StatelessWidget {
       );
     }
 
-    Widget categoryWidget() {
+    Widget categoryWidget(String val) {
       return Container(
         margin: EdgeInsets.symmetric(horizontal: 16.0),
         padding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 4.0),
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5.0),
-            color: HSVColor.fromAHSV(
-                    1.0,
-                    ((360.0 *
-                            (article.categories.first.hashCode & 0xffff) /
-                            (1 << 15)) %
-                        360.0),
-                    0.4,
-                    0.90)
-                .toColor()),
+            borderRadius: BorderRadius.circular(5.0), color: Colors.white
+//            color: HSVColor.fromAHSV(
+//                    1.0,
+//                    ((360.0 * (val.hashCode & 0xffff) / (1 << 15)) % 360.0),
+//                    0.4,
+//                    0.90)
+//                .toColor()
+            ),
         child: Text(
-          article.categories.first,
+          val,
           style: TextStyle(
             fontFamily: 'Libre_Franklin',
             fontSize: 12.0,
@@ -55,10 +53,15 @@ class ArticleBottomSection extends StatelessWidget {
                 article.timeAgo,
                 style: TextStyle(fontFamily: 'Libre_Franklin', fontSize: 12.0),
               ),
-              if (article.categories != null &&
-                  article.categories.length > 0 &&
-                  article.categories.first.isNotEmpty)
-                categoryWidget()
+//              if (article.categories != null &&
+//                  article.categories.length > 0 &&
+//                  article.categories.first.isNotEmpty)
+//                Expanded(child: categoryWidget(article.categories.first))
+//              else
+//                if (article.source != null && article.source.isNotEmpty)
+//                  Expanded(
+//                      child: categoryWidget(
+//                          'src: ${article.source.replaceFirst('https://www.', '')}'))
             ],
           ),
           InkWell(

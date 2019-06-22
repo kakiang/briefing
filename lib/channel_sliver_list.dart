@@ -19,18 +19,19 @@ class _ChannelSliverListState extends State<ChannelSliverList> {
             initialData: [],
             builder: (context, snapshot) {
               return ListView.builder(
+                  physics: ScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: snapshot.data?.length,
                   itemBuilder: (BuildContext context, int index) {
                     print('${snapshot.data[index]}');
-                    return channelListTile(snapshot.data[index]);
+                    return channelListTile(snapshot.data[index], index);
                   });
             })
       ]),
     );
   }
 
-  Container channelListTile(Channel channel) {
+  Container channelListTile(Channel channel, int index) {
     _onTapStarIcon() async {
       setState(() {
         channel.favorite = !channel.favorite;
@@ -43,18 +44,17 @@ class _ChannelSliverListState extends State<ChannelSliverList> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       child: ListTile(
-        contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+//        contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
         leading: Container(
-          width: 64.0,
-          height: 42.0,
+          width: 48.0,
+          height: 36.0,
           decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(3.0),
-              border: Border.all(color: Colors.black12, width: 0.2)),
+              color: Colors.grey[50],
+              border: Border.all(color: Colors.grey[100]),
+              borderRadius: BorderRadius.circular(3.0)),
           child: CachedNetworkImage(
             imageUrl: channel.iconUrl ?? '',
             imageBuilder: (context, imageProvider) => Container(
-                  width: 56.0,
-                  height: 36.0,
                   decoration: BoxDecoration(
                       shape: BoxShape.rectangle,
                       borderRadius: BorderRadius.circular(3.0),
@@ -63,13 +63,15 @@ class _ChannelSliverListState extends State<ChannelSliverList> {
                   padding: EdgeInsets.only(right: 4.0),
                 ),
             placeholder: (context, url) => Icon(Icons.image),
-            fit: BoxFit.fill,
           ),
         ),
         title: Text(
           channel.title,
+          style: Theme.of(context).textTheme.subhead.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
         ),
-        subtitle: Text("Available"),
+        subtitle: Text("${index + 1}. Available"),
         trailing: GestureDetector(
           onTap: _onTapStarIcon,
           child: Container(

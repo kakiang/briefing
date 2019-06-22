@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:briefing/bloc_article.dart';
+import 'package:briefing/bloc/bloc_article.dart';
 import 'package:briefing/briefing_card.dart';
 import 'package:briefing/model/article.dart';
 import 'package:briefing/webview.dart';
@@ -14,7 +14,17 @@ class BriefingSliverList extends StatefulWidget {
 }
 
 class _BriefingSliverListState extends State<BriefingSliverList> {
-  final ArticleListBloc _bloc = ArticleListBloc();
+  ArticleListBloc _bloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _bloc = ArticleListBloc();
+  }
+
+  Future<void> _onRefresh() async {
+    _bloc.refresh();
+  }
 
   @override
   void dispose() {
@@ -24,36 +34,6 @@ class _BriefingSliverListState extends State<BriefingSliverList> {
 
   @override
   Widget build(BuildContext context) {
-    Widget errorWidget(String message) {
-      return Container(
-        padding: EdgeInsets.all(16.0),
-        decoration: BoxDecoration(
-          color: Colors.blueGrey,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: Icon(
-                Icons.warning,
-                color: Colors.white,
-              ),
-            ),
-            Expanded(
-              child: Text(
-                message,
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 15.0,
-                    fontFamily: 'Libre_Franklin'),
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
     return SliverList(
       delegate: SliverChildListDelegate([
         StreamBuilder<List<Article>>(
@@ -93,7 +73,15 @@ class _BriefingSliverListState extends State<BriefingSliverList> {
                     });
               } else if (snapshot.hasError) {
                 debugPrint("!!!snapshot error ${snapshot.error.toString()}");
-                return errorWidget("${snapshot.error}");
+                return GestureDetector(
+                  onTap: _onRefresh,
+                  child: ErrorWidget(
+                    message: [
+                      '${snapshot.error}',
+                      'Keep calm, and tap to retry',
+                    ],
+                  ),
+                );
               } else {
                 return Center(
                   child: Container(
@@ -109,6 +97,41 @@ class _BriefingSliverListState extends State<BriefingSliverList> {
               }
             }),
       ]),
+    );
+  }
+}
+
+class ErrorWidget extends StatelessWidget {
+  final List<String> message;
+
+  const ErrorWidget({Key key, this.message}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Image.asset('assets/images/no_internet.png'),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              'Woops, something went wrong...',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Libre_Franklin'),
+            ),
+          ),
+          Text(
+            message.join('\n'),
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 17.0, fontFamily: 'Libre_Franklin'),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:briefing/model/article.dart';
-import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
 
 class ArticleThumbnail extends StatefulWidget {
   final Article article;
@@ -27,8 +27,7 @@ class _ArticleThumbnailState extends State<ArticleThumbnail> {
                         image: imageProvider, fit: BoxFit.cover)),
               ),
           placeholder: (context, url) => Container(),
-          errorWidget: (context, url, error) => Container(),
-          fit: BoxFit.cover),
+          errorWidget: (context, url, error) => Container()),
     );
 
     // // This is an animated widget built into flutter.
