@@ -5,6 +5,7 @@ import 'package:briefing/briefing_card.dart';
 import 'package:briefing/model/article.dart';
 import 'package:briefing/webview.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_custom_tabs/flutter_custom_tabs.dart';
 
 class BriefingSliverList extends StatefulWidget {
   const BriefingSliverList({Key key}) : super(key: key);
@@ -50,7 +51,6 @@ class _BriefingSliverListState extends State<BriefingSliverList> {
                     itemCount: snapshot.data.length,
                     itemBuilder: (BuildContext context, int index) {
                       return Container(
-//                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
                         child: InkWell(
                           child: Column(
                             children: <Widget>[
@@ -59,14 +59,7 @@ class _BriefingSliverListState extends State<BriefingSliverList> {
                             ],
                           ),
                           onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return ArticleWebView(
-                                      snapshot.data.elementAt(index));
-                                },
-                              ),
-                            );
+                            _launchURL(context, snapshot.data.elementAt(index));
                           },
                         ),
                       );
@@ -78,26 +71,51 @@ class _BriefingSliverListState extends State<BriefingSliverList> {
                   child: ErrorWidget(
                     message: [
                       '${snapshot.error}',
-                      'Keep calm, and tap to retry',
+                      'Keep calm, and tap to retry'
                     ],
                   ),
                 );
               } else {
                 return Center(
-                  child: Container(
-                    margin: EdgeInsets.all(8.0),
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-//                      backgroundColor: Colors.white,
-//                      valueColor: AlwaysStoppedAnimation(Theme.of(context).accentColor),
-                        ),
-                  ),
-                );
+                    child: Container(
+                        margin: EdgeInsets.all(8.0),
+                        width: 30,
+                        height: 30,
+                        child: CircularProgressIndicator()));
               }
             }),
       ]),
     );
+  }
+
+  void _launchURL(BuildContext context, Article article) async {
+    try {
+      await launch(
+        article.link,
+        option: new CustomTabsOption(
+          toolbarColor: Theme.of(context).primaryColor,
+          enableDefaultShare: true,
+          enableUrlBarHiding: true,
+          showPageTitle: true,
+          animation: CustomTabsAnimation.slideIn(),
+          extraCustomTabs: <String>[
+            // ref. https://play.google.com/store/apps/details?id=org.mozilla.firefox
+            'org.mozilla.firefox',
+          ],
+        ),
+      );
+    } catch (e) {
+      // An exception is thrown if browser app is not installed on Android device.
+      debugPrint(e.toString());
+
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) {
+            return ArticleWebView(article);
+          },
+        ),
+      );
+    }
   }
 }
 
