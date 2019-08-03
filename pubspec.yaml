@@ -1,13 +1,6 @@
 name: briefing
 description: A new Flutter project.
 
-# The following defines the version and build number for your application.
-# A version number is three numbers separated by dots, like 1.2.43
-# followed by an optional build number separated by a +.
-# Both the version and the builder number may be overridden in flutter
-# build by specifying --build-name and --build-number, respectively.
-# Read more about versioning at semver.org.
-# sdk: ">=2.1.0 <3.0.0"
 version: 1.0.0+1
 
 environment:
@@ -43,25 +36,15 @@ flutter:
     - assets/images/no_internet.png
 
   fonts:
-    - family: Merriweather
-      fonts:
-        - asset: assets/fonts/Merriweather/Merriweather-Regular.ttf
-        - asset: assets/fonts/Merriweather/Merriweather-Italic.ttf
-        - asset: assets/fonts/Merriweather/Merriweather-Bold.ttf
-          weight: 700
-          style: italic
     - family: Libre_Franklin
       fonts:
         - asset: assets/fonts/Libre_Franklin/LibreFranklin-Regular.ttf
         - asset: assets/fonts/Libre_Franklin/LibreFranklin-Bold.ttf
           weight: 700
-    - family: Work_Sans
+    - family: Crimson_Text
       fonts:
         - asset: assets/fonts/Crimson_Text/CrimsonText-Regular.ttf
         - asset: assets/fonts/Crimson_Text/CrimsonText-SemiBold.ttf
           weight: 600
         - asset: assets/fonts/Crimson_Text/CrimsonText-Bold.ttf
           weight: 700
-  #
-  # For details regarding fonts from package dependencies,
-  # see https://flutter.io/custom-fonts/#from-packages

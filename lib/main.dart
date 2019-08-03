@@ -1,7 +1,7 @@
 import 'package:briefing/briefing_sliver_list.dart';
 import 'package:briefing/channel_sliver_list.dart';
 import 'package:briefing/model/database/database.dart';
-import 'package:briefing/theme.dart';
+import 'package:briefing/theme/theme.dart';
 import 'package:briefing/widget/main_sliverappbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -122,10 +122,14 @@ class _MyHomePageState extends State<MyHomePage> {
       context: context,
       builder: (BuildContext builder) {
         return Container(
-          color: Colors.grey,
-          height: 140.0,
-          child: Drawer(
-            elevation: 20.0,
+          color: Colors.transparent,
+          child: Container(
+            height: 140.0,
+            decoration: new BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                    topLeft: const Radius.circular(15.0),
+                    topRight: const Radius.circular(15.0))),
             child: Wrap(children: <Widget>[
               ListTile(
                 leading: Icon(Icons.format_list_bulleted),

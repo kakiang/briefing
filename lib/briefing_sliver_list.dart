@@ -137,16 +137,16 @@ class ErrorWidget extends StatelessWidget {
             child: Text(
               'Woops, something went wrong...',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.w600,
-                  fontFamily: 'Libre_Franklin'),
+              style: Theme.of(context)
+                  .textTheme
+                  .subhead
+                  .copyWith(fontWeight: FontWeight.w600),
             ),
           ),
           Text(
             message.join('\n'),
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 17.0, fontFamily: 'Libre_Franklin'),
+            style: Theme.of(context).textTheme.subhead,
           ),
         ],
       ),

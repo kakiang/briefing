@@ -32,13 +32,7 @@ class ArticleBottomSection extends StatelessWidget {
 //                    0.90)
 //                .toColor()
             ),
-        child: Text(
-          val,
-          style: TextStyle(
-            fontFamily: 'Libre_Franklin',
-            fontSize: 12.0,
-          ),
-        ),
+        child: Text(val, style: Theme.of(context).textTheme.subtitle),
       );
     }
 
@@ -49,26 +43,11 @@ class ArticleBottomSection extends StatelessWidget {
         children: <Widget>[
           Row(
             children: <Widget>[
-              Text(
-                article.timeAgo,
-                style: TextStyle(fontFamily: 'Libre_Franklin', fontSize: 12.0),
-              ),
-//              if (article.categories != null &&
-//                  article.categories.length > 0 &&
-//                  article.categories.first.isNotEmpty)
-//                Expanded(child: categoryWidget(article.categories.first))
-//              else
-//                if (article.source != null && article.source.isNotEmpty)
-//                  Expanded(
-//                      child: categoryWidget(
-//                          'src: ${article.source.replaceFirst('https://www.', '')}'))
+              Text(article.timeAgo, style: Theme.of(context).textTheme.subtitle)
             ],
           ),
           InkWell(
-            child: Icon(
-              Icons.more_vert,
-              color: Colors.grey[600],
-            ),
+            child: Icon(Icons.more_vert),
             onTap: () {
               _modalBottomSheetMenu();
             },
