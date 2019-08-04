@@ -1,5 +1,4 @@
 import 'package:briefing/briefing_sliver_list.dart';
-import 'package:briefing/channel_sliver_list.dart';
 import 'package:briefing/model/database/database.dart';
 import 'package:briefing/theme/theme.dart';
 import 'package:briefing/widget/main_sliverappbar.dart';
@@ -33,16 +32,13 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   static var briefingSliver = BriefingSliverList();
-  static var newsstandSliver = ChannelSliverList();
   var _pages = {
     "Briefing": briefingSliver,
-    "Newsstands": newsstandSliver,
   };
 
   @override
   void initState() {
     super.initState();
-//    DBProvider.db.initDB();
   }
 
   @override
@@ -73,26 +69,8 @@ class _MyHomePageState extends State<MyHomePage> {
               _pages.values.elementAt(_selectedIndex)
             ],
           ),
-          floatingActionButton: _selectedIndex == 1
-              ? FloatingActionButton(
-                  backgroundColor: Theme.of(context).accentColor,
-                  child: Icon(
-                    Icons.add,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                  onPressed: () {
-                    _scaffoldKey.currentState
-                        .showSnackBar(SnackBar(content: Text("soon")));
-//                    Navigator.of(context).push(MaterialPageRoute(
-//                        builder: (BuildContext context) => ChannelDialog(),
-//                        fullscreenDialog: true));
-                  },
-                )
-              : Container(),
-          floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
           bottomNavigationBar: BottomAppBar(
             color: Colors.grey[50],
-            shape: _selectedIndex == 1 ? CircularNotchedRectangle() : null,
             child: InkWell(
               onTap: () => showBottomAppBarSheet(),
               child: Row(
@@ -100,7 +78,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   IconButton(
                       icon: Icon(Icons.menu),
                       onPressed: () => showBottomAppBarSheet()),
-//                IconButton(icon: Icon(Icons.refresh), onPressed: () {})
                 ],
               ),
             ),

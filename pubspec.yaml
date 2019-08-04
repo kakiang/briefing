@@ -11,15 +11,12 @@ dependencies:
     sdk: flutter
   url_launcher: ^5.0.2
   share: 0.5.3
-  webview_flutter: ^0.3.5+4
   intl: ^0.15.8
   connectivity: ^0.4.3+2
-  webfeed: ^0.4.2
   http: ^0.12.0+2
   rxdart: ^0.22.0
   cached_network_image: ^0.8.0
   flutter_custom_tabs: ^0.6.0
-#  pull_to_refresh: ^1.4.4
   cupertino_icons: ^0.1.2
 
 dev_dependencies:
@@ -28,9 +25,6 @@ dev_dependencies:
 
 flutter:
 
-  # The following line ensures that the Material Icons font is
-  # included with your application, so that you can use the icons in
-  # the material Icons class.
   uses-material-design: true
   assets:
     - assets/images/no_internet.png

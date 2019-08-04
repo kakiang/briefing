@@ -5,7 +5,6 @@ import 'package:briefing/widget/article_title_section.dart';
 
 class BriefingCard extends StatefulWidget {
   final Article article;
-  static const double height = 300.0;
 
   const BriefingCard({Key key, this.article}) : super(key: key);
 

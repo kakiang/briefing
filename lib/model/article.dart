@@ -1,70 +1,41 @@
-import 'package:briefing/model/channel.dart';
 import 'package:intl/intl.dart';
-import 'package:webfeed/domain/rss_item.dart';
 
 class Article {
-  int id;
+  num id;
   final String title;
   final String description;
   final String link;
-  final List<String> categories;
-  final String guid;
-  final String pubDate;
+  final String publishedAt;
   final String author;
-  final String comments;
   final String source;
-  final List<String> mediaUrl;
   final String content;
-  final List<String> mediaThumbnails;
-  final String enclosure;
-  final Channel channel;
-  bool bookmarked;
+  final String imageUrl;
+  bool bookmarked = false;
 
   Article(
       {this.id,
       this.title,
       this.description,
       this.link,
-      this.categories,
-      this.guid,
-      this.pubDate,
+      this.publishedAt,
       this.author,
-      this.comments,
       this.source,
-      this.mediaUrl,
       this.content,
-      this.mediaThumbnails,
-      this.enclosure,
-      this.channel,
+      this.imageUrl,
       this.bookmarked});
 
-  factory Article.fromMap(Map<String, dynamic> data) {
+  factory Article.fromMap(Map<String, dynamic> data, {network = false}) {
     return Article(
       id: data['id'],
       title: data['title'],
       description: data['description'],
       link: data['link'],
-      categories: data['categories'].toString().split(';'),
-      guid: data['guid'],
-      pubDate: data['pub_date'],
+      publishedAt: data['publishedAt'],
       author: data['author'],
-      comments: data['comments'],
-      source: data['url_source'],
-      mediaUrl: data['media_url'].toString().split(';'),
+      source: network ? data['source']['name'] : data['source'],
       content: data['content'],
-      mediaThumbnails: data['media_thumbnails'].toString().split(';'),
-      enclosure: data['enclosure'],
-      channel: Channel.fromMap({
-        'id': data['channel_id'],
-        'title': data['c_title'],
-        'link': data['c_link'],
-        'last_build_date': data['last_build_date'],
-        'language': data['language'],
-        'link_rss': data['link_rss'],
-        'icon_url': data['icon_url'],
-        'favorite': data['favorite'] == 1,
-      }),
-      bookmarked: data['bookmarked'] == 1,
+      imageUrl: data['urlToImage'],
+      bookmarked: (data['bookmarked'] ?? false) == 1,
     );
   }
 
@@ -73,46 +44,20 @@ class Article {
       'title': title,
       'description': description,
       'link': link,
-      'categories': categories?.join(';'),
-      'guid': guid,
-      'pub_date': pubDate,
+      'publishedAt': publishedAt,
       'author': author,
-      'comments': comments,
-      'url_source': source,
-      'media_url': mediaUrl?.join(';'),
+      'source': source,
       'content': content,
-      'media_thumbnails': mediaThumbnails?.join(';'),
-      'enclosure': enclosure,
-      'channel_id': channel.id,
+      'urlToImage': imageUrl,
       'bookmarked': bookmarked,
     };
   }
 
-  Article.fromRssItem(RssItem item, Channel channel)
-      : title = item.title,
-        description = item.description,
-        link = item.link,
-        categories = item.categories.map((cat) => cat.value).toList(),
-        guid = item.guid,
-        pubDate = item.pubDate,
-        author = item.author,
-        comments = item.comments,
-        source = item.source?.url,
-//        mediaUrl = item.media?.contents?.first?.url,
-        mediaUrl = item.media.contents.isNotEmpty
-            ? item.media.contents.map((cont) => cont.url).toList()
-            : [],
-        content = item.content?.value,
-        mediaThumbnails =
-            item.media.thumbnails.map((thumbnail) => thumbnail.url).toList(),
-        enclosure = item.enclosure?.url,
-        channel = channel,
-        bookmarked = false;
-
   String get timeAgo {
-    var formatter = DateFormat("EEE, d MMM yyyy HH:mm:ss zzz");
+    var formatter = DateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+//    var formatter = DateFormat("EEE, d MMM yyyy HH:mm:ss zzz");
 
-    DateTime parsedDate = formatter.parse(pubDate);
+    DateTime parsedDate = formatter.parse(publishedAt);
     Duration duration = DateTime.now().difference(parsedDate);
 
     if (duration.inDays > 7 || duration.isNegative) {
@@ -133,39 +78,29 @@ class Article {
   bool isNew() {
     var formatter = DateFormat("EEE, d MMM yyyy HH:mm:ss zzz");
 
-    DateTime parsedDate = formatter.parse(pubDate);
+    DateTime parsedDate = formatter.parse(publishedAt);
     Duration duration = DateTime.now().difference(parsedDate);
-    if (duration.inHours < 36) {
+    if (duration.inHours < 24) {
       return true;
     }
-//    print('old ${duration.inHours}');
     return false;
   }
 
-  set channel(Channel channel) {
-    this.channel = channel;
-  }
-
-  get thumbnail {
-    if (enclosure != null) {
-      return enclosure;
-    } else if (mediaThumbnails != null &&
-        mediaThumbnails.isNotEmpty &&
-        mediaThumbnails.first.isNotEmpty) {
-      return mediaThumbnails.first;
-    } else if (mediaUrl != null &&
-        mediaUrl.isNotEmpty &&
-        mediaUrl.first.isNotEmpty) {
-      return mediaUrl.first;
-    }
-    return null;
-  }
-
-  bool get isValid =>
-      title != null && title.length > 3 && link != null && channel != null;
-
-  @override
-  String toString() {
-    return "Article{id:$id,channel:$channel}\n";
-  }
+  bool get isValid => title != null && title.length > 3 && link != null;
 }
+
+var newsapi = '''
+{
+  "source": {
+  "id": "business-insider",
+  "name": "Business Insider"
+  },
+  "author": "Rebecca Aydin",
+  "title": "Mark Zuckerberg, Tim Cook, and more tech CEOs share favorite books - Business Insider",
+  "description": "Zuckerberg recommends a novel about who really invented the lightbulb, and Sheryl Sandberg recommends Melinda Gates' book on female empowerment.",
+  "url": "https://www.businessinsider.com/mark-zuckerberg-tim-cook-sheryl-sandberg-favorite-books-2019-8",
+  "urlToImage": "https://amp.businessinsider.com/images/5d44669e100a2431aa055304-2732-1366.jpg",
+  "publishedAt": "2019-08-04T13:05:44Z",
+  "content": "When a young Stanford neurosurgeon is diagnosed with lung cancer, he sets out to write a memoir about mortality, memory, family, medicine, literature, philosophy, and religion. It's a tear-jerker, with an epilogue written by his wife Dr. Lucy Kalanithi, who s… [+93 chars]"
+}
+''';

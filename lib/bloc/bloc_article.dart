@@ -1,14 +1,13 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:briefing/bloc/bloc_provider.dart';
 import 'package:briefing/model/article.dart';
-import 'package:briefing/model/channel.dart';
 import 'package:briefing/model/database/repository.dart';
 import 'package:briefing/util/rate_limiter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:rxdart/rxdart.dart';
-import 'package:webfeed/webfeed.dart';
 
 class ArticleListBloc extends BlocBase {
   RateLimiter rateLimit = getRateLimiter;
@@ -62,60 +61,28 @@ class ArticleListBloc extends BlocBase {
 
   Future<void> _fetchFromNetwork() async {
     print('BlocArticle.fetchFromNetwork start');
-    List<Channel> channels = await RepositoryChannel.getAllFavoriteChannel();
-
-    if (channels.isNotEmpty) {
-      List<Article> articles = await _fetchAllChannels(channels);
-
-      if (articles.isNotEmpty) {
-        await saveResult(articles);
-        await _loadFromDb();
-      } else {
-        if (_articleList.isEmpty) sendErrorMessage('No article');
-      }
-    } else {
-      if (_articleList.isEmpty) sendErrorMessage('No channel');
-    }
-  }
-
-  Future<List<Article>> _fetchAllChannels(List<Channel> channels) async {
-    List<Article> articles = [];
-    try {
-      var futures =
-          channels.map((channel) async => await _fetchRssFeed(channel));
-      final result = await Future.wait(futures);
-      print('_fetchAllChannels result.length ${result?.length}');
-      if (result != null && result.length > 0) {
-        articles = await compute(prepareItems, result);
-      }
-    } catch (e) {
-      print('=== _fetchAllChannels Error $e');
-      sendErrorMessage('fetchAllChannels Error $e');
-    }
-    print('Future.wait length: ${articles?.length}');
-    return articles;
-  }
-
-  Future<List<Article>> _fetchRssFeed(Channel channel) async {
-    print('=== _fetchRssFeed === link:${channel?.linkRss}');
-    List<Article> articles = [];
 
     try {
-      final response = await http.get(channel.linkRss);
+      final response = await http.get(
+          'https://newsapi.org/v2/top-headlines?country=us&apiKey=11cd66d3a6994c108e7fb7d92cee5e12');
       if (response.statusCode == 200) {
-        var rssFeed = RssFeed.parse(response.body);
-
-        List<RssItem> items = rssFeed?.items;
-        items.forEach((rssItem) {
-          articles.add(Article.fromRssItem(rssItem, channel));
-        });
+        var articles = await compute(parseArticlesList, response.body);
+        if (articles.isNotEmpty) {
+          try {
+            await saveResult(articles);
+          } catch (error) {
+            print('DB Error ${error.statusCode}');
+          }
+          await _loadFromDb();
+        } else {
+          sendErrorMessage('No articles');
+        }
       } else {
-        print('Http Error ${response.statusCode} ${channel.linkRss}');
+        print('Http Error ${response.statusCode}');
       }
     } catch (e) {
-      print('=== _fetchRssFeed Error ${e.toString()}');
+      print('=== _fetchFromNetwork Error ${e.toString()}');
     }
-    return articles;
   }
 
   saveResult(List<Article> articles) async {
@@ -129,29 +96,11 @@ class ArticleListBloc extends BlocBase {
     return false;
   }
 
-//  Future<bool> shouldFetch() async {
-//    var connectivityResult = await (Connectivity().checkConnectivity());
-//    if (!(connectivityResult == ConnectivityResult.none) &&
-//        (rateLimit.shouldFetch('ArticleList'))) {
-//      return true;
-//    }
-//    return false;
-//  }
-
   void sendErrorMessage([String message = "Can't connect to the internet!"]) {
     print('sendErrorMessage');
     if (_articleList.isEmpty)
       _articleListSubject.addError(BriefingError(message));
   }
-}
-
-List<Article> prepareItems(List<List<Article>> result) {
-  List<Article> articles = [];
-  result.where((list) => list != null).forEach((list) {
-    print('===prepareItems_fetchAllChannels list.isEmpty ${list?.isEmpty}');
-    articles.addAll(list.where((article) => article.isNew()));
-  });
-  return articles;
 }
 
 class BriefingError extends Error {
@@ -163,4 +112,14 @@ class BriefingError extends Error {
   String toString() {
     return '$message';
   }
+}
+
+List<Article> parseArticlesList(String responseBody) {
+  final parsed = json.decode(responseBody);
+  if (parsed['totalResults'] > 0) {
+    var articles = List<Article>.from(parsed['articles']
+        .map((article) => Article.fromMap(article, network: true)));
+    return articles;
+  }
+  return [];
 }

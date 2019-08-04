@@ -3,9 +3,7 @@ import 'dart:async';
 import 'package:briefing/bloc/bloc_article.dart';
 import 'package:briefing/briefing_card.dart';
 import 'package:briefing/model/article.dart';
-import 'package:briefing/webview.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_custom_tabs/flutter_custom_tabs.dart';
 
 class BriefingSliverList extends StatefulWidget {
   const BriefingSliverList({Key key}) : super(key: key);
@@ -43,26 +41,17 @@ class _BriefingSliverListState extends State<BriefingSliverList> {
             builder: (context, snapshot) {
               debugPrint("!!!snapshot state: ${snapshot.connectionState}!!!");
               if (snapshot.hasData && snapshot.data.length > 0) {
-                return ListView.builder(
-                    padding:
-                        EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
+                return ListView.separated(
+                    padding: EdgeInsets.all(12.0),
                     physics: ScrollPhysics(),
                     shrinkWrap: true,
                     itemCount: snapshot.data.length,
+                    separatorBuilder: (BuildContext context, int index) {
+                      return Divider();
+                    },
                     itemBuilder: (BuildContext context, int index) {
-                      return Container(
-                        child: InkWell(
-                          child: Column(
-                            children: <Widget>[
-                              BriefingCard(
-                                  article: snapshot.data.elementAt(index)),
-                            ],
-                          ),
-                          onTap: () {
-                            _launchURL(context, snapshot.data.elementAt(index));
-                          },
-                        ),
-                      );
+                      return BriefingCard(
+                          article: snapshot.data.elementAt(index));
                     });
               } else if (snapshot.hasError) {
                 debugPrint("!!!snapshot error ${snapshot.error.toString()}");
@@ -87,36 +76,6 @@ class _BriefingSliverListState extends State<BriefingSliverList> {
       ]),
     );
   }
-
-  void _launchURL(BuildContext context, Article article) async {
-    try {
-      await launch(
-        article.link,
-        option: new CustomTabsOption(
-          toolbarColor: Theme.of(context).primaryColor,
-          enableDefaultShare: true,
-          enableUrlBarHiding: true,
-          showPageTitle: true,
-          animation: CustomTabsAnimation.slideIn(),
-          extraCustomTabs: <String>[
-            // ref. https://play.google.com/store/apps/details?id=org.mozilla.firefox
-            'org.mozilla.firefox',
-          ],
-        ),
-      );
-    } catch (e) {
-      // An exception is thrown if browser app is not installed on Android device.
-      debugPrint(e.toString());
-
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) {
-            return ArticleWebView(article);
-          },
-        ),
-      );
-    }
-  }
 }
 
 class ErrorWidget extends StatelessWidget {
@@ -134,14 +93,12 @@ class ErrorWidget extends StatelessWidget {
           Image.asset('assets/images/no_internet.png'),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text(
-              'Woops, something went wrong...',
-              textAlign: TextAlign.center,
-              style: Theme.of(context)
-                  .textTheme
-                  .subhead
-                  .copyWith(fontWeight: FontWeight.w600),
-            ),
+            child: Text('Woops, something went wrong...',
+                textAlign: TextAlign.center,
+                style: Theme.of(context)
+                    .textTheme
+                    .subhead
+                    .copyWith(fontWeight: FontWeight.w600)),
           ),
           Text(
             message.join('\n'),

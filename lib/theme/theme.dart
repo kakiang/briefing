@@ -40,7 +40,7 @@ TextTheme _buildAppTextTheme(TextTheme base) {
           button: base.button.copyWith(fontFamily: 'Libre_Franklin'),
           subtitle: base.subtitle.copyWith(
             fontFamily: 'Libre_Franklin',
-            fontSize: 14.0,
+            fontSize: 16.0,
           ))
       .apply(
           fontFamily: 'Crimson_Text',

@@ -19,23 +19,6 @@ class ArticleBottomSection extends StatelessWidget {
       );
     }
 
-    Widget categoryWidget(String val) {
-      return Container(
-        margin: EdgeInsets.symmetric(horizontal: 16.0),
-        padding: EdgeInsets.symmetric(vertical: 2.0, horizontal: 4.0),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5.0), color: Colors.white
-//            color: HSVColor.fromAHSV(
-//                    1.0,
-//                    ((360.0 * (val.hashCode & 0xffff) / (1 << 15)) % 360.0),
-//                    0.4,
-//                    0.90)
-//                .toColor()
-            ),
-        child: Text(val, style: Theme.of(context).textTheme.subtitle),
-      );
-    }
-
     return Container(
       padding: const EdgeInsets.only(top: 8.0, bottom: 4.0),
       child: Row(
@@ -43,6 +26,8 @@ class ArticleBottomSection extends StatelessWidget {
         children: <Widget>[
           Row(
             children: <Widget>[
+              Icon(Icons.timelapse),
+              SizedBox(width: 4.0),
               Text(article.timeAgo, style: Theme.of(context).textTheme.subtitle)
             ],
           ),
