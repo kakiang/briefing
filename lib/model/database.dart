@@ -41,14 +41,15 @@ class DBProvider {
           "(id INTEGER PRIMARY KEY autoincrement, "
           "title TEXT,"
           "description TEXT,"
-          "link TEXT,"
+          "url TEXT,"
           "publishedAt TEXT,"
           "author TEXT,"
           "source TEXT,"
           "content TEXT,"
           "urlToImage TEXT,"
+          "category TEXT,"
           "bookmarked BIT,"
-          "UNIQUE(link));";
+          "UNIQUE(url));";
 
       await db.transaction((txn) async {
         await txn.execute('$articleTable');
@@ -61,16 +62,13 @@ class DBProvider {
   Future<int> insertArticle(Article article) async {
     final db = await database;
     var res;
-    res = await db.insert(
-      'articles',
-      article.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    res = await db.insert('articles', article.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
 
     return res;
   }
 
-  Future<int> insertArticleList(List<Article> articles) async {
+  Future<int> insertArticleList(List<Article> articles, {category}) async {
     print('=== DBProvider.insertArticleList start ===');
     final db = await database;
     var res;
@@ -78,7 +76,7 @@ class DBProvider {
       articles.forEach((article) async {
         res = await txn.insert(
           'articles',
-          article.toMap(),
+          article.toMap(category: category),
           conflictAlgorithm: ConflictAlgorithm.replace,
         );
       });
@@ -87,24 +85,19 @@ class DBProvider {
     return res;
   }
 
-//  Future<List<Article>> getAllArticle([bool favoriteChannel = true]) async {
-//    print('DBProvider.getAllArticle start');
-//    final db = await database;
-//    var sql =
-//        "SELECT a.*, c.title as c_title, c.link as c_link, c.link_rss, c.icon_url,"
-//        "c.last_build_date,c.language, c.favorite "
-//        "FROM articles a, channels c "
-//        "WHERE a.channel_id=c.id ${favoriteChannel ? 'AND c.favorite=1' : ''} "
-//        "ORDER BY a.pub_date DESC";
-//    List<Map> res = await db.rawQuery(sql);
-//    return res.isNotEmpty ? res.map((a) => Article.fromMap(a)).toList() : [];
-//  }
-
   Future<List<Article>> getAllArticle() async {
     final db = await database;
     List<Map> res = await db.query("articles", orderBy: "publishedAt DESC");
     return res.isNotEmpty ? await compute(prepareArticles, res) : [];
-//    res.map((a) => Article.fromMap(a)).toList()
+  }
+
+  Future<List<Article>> getAllArticleByCategory(category) async {
+    final db = await database;
+    List<Map> res = await db.query("articles",
+        where: "category = ?",
+        orderBy: "publishedAt DESC",
+        whereArgs: [category]);
+    return res.isNotEmpty ? await compute(prepareArticles, res) : [];
   }
 
   Future<Article> getArticle(int id) async {
@@ -132,12 +125,6 @@ class DBProvider {
   }
 
   Future close() async => db.close();
-
-  static void databaseLog({String fName, String sql, result}) {
-    print('Log::: DBProvider.$fName end');
-    if (sql != null) print('sql: $sql');
-    if (result != null) print('result $result');
-  }
 }
 
 List<Article> prepareArticles(List<Map> list) {

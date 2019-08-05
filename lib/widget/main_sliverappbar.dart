@@ -17,9 +17,9 @@ class MainSliverAppBar extends StatelessWidget {
     }
 
     return SliverAppBar(
-      elevation: 5.0,
+      elevation: 1.0,
       pinned: true,
-      // brightness: Brightness.light,
+      forceElevated: true,
       leading: IconButton(
         icon: Icon(
           Icons.search,

@@ -26,8 +26,6 @@ class ArticleBottomSection extends StatelessWidget {
         children: <Widget>[
           Row(
             children: <Widget>[
-              Icon(Icons.timelapse),
-              SizedBox(width: 4.0),
               Text(article.timeAgo, style: Theme.of(context).textTheme.subtitle)
             ],
           ),

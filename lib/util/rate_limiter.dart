@@ -13,7 +13,7 @@ class RateLimiter {
     return _rateLimiter;
   }
 
-  RateLimiter._internal([this._timeout = 2]);
+  RateLimiter._internal([this._timeout = 15]);
 
   bool shouldFetch(String key) {
     int lastFetched = timestamps[key];

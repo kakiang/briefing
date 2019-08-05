@@ -41,33 +41,68 @@ class _BriefingSliverListState extends State<BriefingSliverList> {
             builder: (context, snapshot) {
               debugPrint("!!!snapshot state: ${snapshot.connectionState}!!!");
               if (snapshot.hasData && snapshot.data.length > 0) {
-                return ListView.separated(
-                    padding: EdgeInsets.all(12.0),
-                    physics: ScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: snapshot.data.length,
-                    separatorBuilder: (BuildContext context, int index) {
-                      return Divider();
-                    },
-                    itemBuilder: (BuildContext context, int index) {
-                      return BriefingCard(
-                          article: snapshot.data.elementAt(index));
-                    });
+                return Column(
+                  children: <Widget>[
+                    StreamBuilder<String>(
+                        stream: _bloc.categoryObservable,
+                        builder: (context, snapshot) {
+                          return Card(
+                            margin: EdgeInsets.zero,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(0.0)),
+                            elevation: 3.0,
+                            child: Container(
+                              margin: EdgeInsets.symmetric(vertical: 12.0),
+                              height: 30.0,
+                              width: MediaQuery.of(context).size.width,
+                              child: ListView(
+                                physics: ScrollPhysics(),
+                                shrinkWrap: true,
+                                scrollDirection: Axis.horizontal,
+                                children: categories
+                                    .map(
+                                      (category) => Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 4.0),
+                                        child: ChoiceChip(
+                                            label: Text(category),
+                                            selected: snapshot.data == category,
+                                            onSelected: (val) {
+                                              _bloc.categorySink.add(category);
+                                            }),
+                                      ),
+                                    )
+                                    .toList(),
+                              ),
+                            ),
+                          );
+                        }),
+                    ListView.separated(
+                        padding: EdgeInsets.all(12.0),
+                        physics: ScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: snapshot.data.length,
+                        separatorBuilder: (BuildContext context, int index) {
+                          return Divider();
+                        },
+                        itemBuilder: (BuildContext context, int index) {
+                          return BriefingCard(
+                              article: snapshot.data.elementAt(index));
+                        }),
+                  ],
+                );
               } else if (snapshot.hasError) {
                 debugPrint("!!!snapshot error ${snapshot.error.toString()}");
                 return GestureDetector(
-                  onTap: _onRefresh,
-                  child: ErrorWidget(
-                    message: [
+                    onTap: _onRefresh,
+                    child: ErrorWidget(message: [
                       '${snapshot.error}',
                       'Keep calm, and tap to retry'
-                    ],
-                  ),
-                );
+                    ]));
               } else {
                 return Center(
                     child: Container(
-                        margin: EdgeInsets.all(8.0),
+                        margin: EdgeInsets.all(12.0),
                         width: 30,
                         height: 30,
                         child: CircularProgressIndicator()));

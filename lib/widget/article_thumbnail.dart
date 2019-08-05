@@ -15,7 +15,7 @@ class _ArticleThumbnailState extends State<ArticleThumbnail> {
   Widget build(BuildContext context) {
     return Container(
       child: CachedNetworkImage(
-          imageUrl: widget.article.imageUrl ?? '',
+          imageUrl: widget.article.imageUrl,
           imageBuilder: (context, imageProvider) => Container(
                 width: 92.0,
                 height: 92.0,

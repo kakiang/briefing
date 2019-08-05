@@ -1,5 +1,5 @@
 import 'package:briefing/model/article.dart';
-import 'package:briefing/model/database/database.dart';
+import 'package:briefing/model/database.dart';
 import 'package:flutter/material.dart';
 import 'package:share/share.dart';
 
@@ -30,7 +30,7 @@ class _BottomSheetArticleMenuState extends State<BottomSheetArticleMenu> {
             leading: Icon(Icons.share),
             title: Text('Share'),
             onTap: () {
-              Share.share('check out ${widget.article.link}');
+              Share.share('check out ${widget.article.url}');
             },
           ),
           ListTile(

@@ -1,5 +1,5 @@
 import 'package:briefing/briefing_sliver_list.dart';
-import 'package:briefing/model/database/database.dart';
+import 'package:briefing/model/database.dart';
 import 'package:briefing/theme/theme.dart';
 import 'package:briefing/widget/main_sliverappbar.dart';
 import 'package:flutter/material.dart';
@@ -109,19 +109,17 @@ class _MyHomePageState extends State<MyHomePage> {
                     topRight: const Radius.circular(15.0))),
             child: Wrap(children: <Widget>[
               ListTile(
-                leading: Icon(Icons.format_list_bulleted),
-                title: Text('Headlines'),
-                onTap: () {
-                  _onItemTapped(0);
-                },
-              ),
+                  leading: Icon(Icons.format_list_bulleted),
+                  title: Text('Headlines'),
+                  onTap: () {
+                    _onItemTapped(0);
+                  }),
               ListTile(
-                leading: Icon(Icons.library_books),
-                title: Text('Newsstands'),
-                onTap: () {
-                  _onItemTapped(1);
-                },
-              ),
+                  leading: Icon(Icons.library_books),
+                  title: Text('Newsstands'),
+                  onTap: () {
+                    _onItemTapped(0);
+                  }),
             ]),
           ),
         );

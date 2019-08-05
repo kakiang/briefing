@@ -1,55 +1,80 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:briefing/bloc/bloc_provider.dart';
 import 'package:briefing/model/article.dart';
-import 'package:briefing/model/database/repository.dart';
+import 'package:briefing/model/repository.dart';
 import 'package:briefing/util/rate_limiter.dart';
-import 'package:flutter/foundation.dart';
-import 'package:http/http.dart' as http;
 import 'package:rxdart/rxdart.dart';
 
 class ArticleListBloc extends BlocBase {
   RateLimiter rateLimit = getRateLimiter;
   final _articleListSubject = BehaviorSubject<List<Article>>();
+  final _articleCategorySubject = BehaviorSubject.seeded('All');
   List<Article> _articleList = <Article>[];
+
+  Stream<List<Article>> get articleListObservable => _articleListSubject.stream;
+
+  Stream<String> get categoryObservable => _articleCategorySubject.stream;
+
+  Sink<String> get categorySink => _articleCategorySubject.sink;
 
   ArticleListBloc() {
     _articleListSubject.add(_articleList);
     _init();
+    categoryListener();
   }
 
   Future<void> _init() async {
     await _loadFromDb();
-    if (shouldFetch()) {
+    if (shouldFetch('ArticleList')) {
       await _fetchFromNetwork();
     }
   }
 
-  Stream<List<Article>> get articleListObservable => _articleListSubject.stream;
+  categoryListener() {
+    categoryObservable.listen((category) async {
+      if (category.toLowerCase().startsWith('all')) {
+        _init();
+      } else {
+        await _loadFromDb(category: category.toLowerCase());
+        if (shouldFetch(category)) {
+          await _fetchFromNetwork(category: category.toLowerCase());
+        }
+      }
+    });
+  }
 
   refresh() async {
     print(':::refresh:::');
-    _articleListSubject.add(_articleList);
+    _articleListSubject.sink.add(_articleList);
     await _fetchFromNetwork();
+  }
+
+  pipe(List<Article> articles) {
+    print(':::pipe::::');
+    _articleList.clear();
+    _articleList.addAll(articles);
+    _articleListSubject.sink.add(_articleList);
   }
 
   @override
   dispose() {
     _articleListSubject.close();
+    _articleCategorySubject.close();
   }
 
-  Future<void> _loadFromDb() async {
+  Future<void> _loadFromDb({category}) async {
     print('BlocArticle._loadFromDb starts');
     try {
       print('->await RepositoryArticle.getAllArticle starts');
-      var localData = await RepositoryArticle.getAllArticle();
+      var localData = category != null
+          ? await RepositoryArticle.getAllArticleByCategory(category)
+          : await RepositoryArticle.getArticlesFromDatabase();
       print('->await RepositoryArticle.getAllArticle done');
       print('->RepositoryArticle.getAllArticle isEmpty: ${localData.isEmpty}');
+
       if (localData.isNotEmpty) {
-        _articleList.clear();
-        _articleList.addAll(localData);
-        _articleListSubject.add(_articleList);
+        pipe(localData);
       } else {
         sendErrorMessage('No article in DB');
       }
@@ -59,38 +84,25 @@ class ArticleListBloc extends BlocBase {
     print('BlocArticle._loadFromDb end');
   }
 
-  Future<void> _fetchFromNetwork() async {
+  Future<void> _fetchFromNetwork({country = 'us', category = 'general'}) async {
     print('BlocArticle.fetchFromNetwork start');
 
-    try {
-      final response = await http.get(
-          'https://newsapi.org/v2/top-headlines?country=us&apiKey=11cd66d3a6994c108e7fb7d92cee5e12');
-      if (response.statusCode == 200) {
-        var articles = await compute(parseArticlesList, response.body);
-        if (articles.isNotEmpty) {
-          try {
-            await saveResult(articles);
-          } catch (error) {
-            print('DB Error ${error.statusCode}');
-          }
-          await _loadFromDb();
-        } else {
-          sendErrorMessage('No articles');
-        }
-      } else {
-        print('Http Error ${response.statusCode}');
+    var articles =
+        await RepositoryArticle.getArticlesFromNetwork(country, category);
+    if (articles.isNotEmpty) {
+      try {
+        await RepositoryArticle.insertArticleList(articles);
+      } catch (error) {
+        print('DB Error ${error.statusCode}');
       }
-    } catch (e) {
-      print('=== _fetchFromNetwork Error ${e.toString()}');
+      await _loadFromDb();
+    } else {
+      sendErrorMessage('No articles');
     }
   }
 
-  saveResult(List<Article> articles) async {
-    await RepositoryArticle.insertArticleList(articles);
-  }
-
-  bool shouldFetch() {
-    if (rateLimit.shouldFetch('ArticleList')) {
+  bool shouldFetch(key) {
+    if (rateLimit.shouldFetch(key)) {
       return true;
     }
     return false;
@@ -112,14 +124,4 @@ class BriefingError extends Error {
   String toString() {
     return '$message';
   }
-}
-
-List<Article> parseArticlesList(String responseBody) {
-  final parsed = json.decode(responseBody);
-  if (parsed['totalResults'] > 0) {
-    var articles = List<Article>.from(parsed['articles']
-        .map((article) => Article.fromMap(article, network: true)));
-    return articles;
-  }
-  return [];
 }
