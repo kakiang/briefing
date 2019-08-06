@@ -22,10 +22,9 @@ ThemeData buildAppTheme() {
     primaryIconTheme: base.iconTheme.copyWith(color: themeAppGrey600),
     inputDecorationTheme: InputDecorationTheme(border: OutlineInputBorder()),
     iconTheme: base.iconTheme.copyWith(color: themeAppGrey700),
-//    chipTheme: base.chipTheme.copyWith(
-//        selectedColor: themeAppBlue500,
-//        secondaryLabelStyle:
-//            base.chipTheme.secondaryLabelStyle.copyWith(color: Colors.white)),
+    chipTheme: base.chipTheme.copyWith(
+        secondaryLabelStyle: base.chipTheme.secondaryLabelStyle
+            .copyWith(color: Colors.white, fontWeight: FontWeight.w500)),
   );
 }
 

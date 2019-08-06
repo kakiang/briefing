@@ -42,7 +42,7 @@ class ArticleTitleSection extends StatelessWidget {
             ],
           ),
         ),
-        if (article.imageUrl != null) ArticleThumbnail(article: article),
+//        if (article.imageUrl != null) ArticleThumbnail(article: article),
       ],
     );
   }

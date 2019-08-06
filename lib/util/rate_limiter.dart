@@ -1,4 +1,6 @@
 ///Utility class that decides whether we should fetch some data or not.
+import 'package:briefing/model/repository.dart';
+
 class RateLimiter {
   Map<String, int> timestamps = new Map();
 
@@ -15,19 +17,19 @@ class RateLimiter {
 
   RateLimiter._internal([this._timeout = 15]);
 
-  bool shouldFetch(String key) {
-    int lastFetched = timestamps[key];
+  Future<bool> shouldFetch(String key) async {
+    int lastFetched = await RepositoryCommon.getValue(key);
     var now = DateTime.now();
-    if (lastFetched == null) {
+    if (lastFetched == 0) {
       print('shouldFetch yes lastFetched == null');
-      timestamps[key] = now.millisecond;
+      await RepositoryCommon.insertMetadata(key);
       return true;
     }
 
     if (now.millisecond - lastFetched >
         Duration(minutes: _timeout).inMilliseconds) {
       print('shouldFetch yes timeout');
-      timestamps[key] = now.millisecond;
+      await RepositoryCommon.insertMetadata(key);
       return true;
     }
 
@@ -35,9 +37,7 @@ class RateLimiter {
     return false;
   }
 
-  void reset(String key) {
-    timestamps.remove(key);
-  }
+  void reset(String key) {}
 }
 
 RateLimiter getRateLimiter = RateLimiter();

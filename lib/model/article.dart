@@ -93,12 +93,13 @@ class Article {
   bool get isValid => title != null && title.length > 3 && url != null;
 }
 
-const categories = [
-  'All',
-  'Business',
-  'Entertainment',
-  'Health',
-  'Science',
-  'Sports',
-  'Technology'
-];
+const categories = {
+  'All': '',
+  'Technology': 'technology',
+  'Business': 'business',
+  'Entertainment': 'entertainment',
+  'Health': 'health',
+  'Science': 'science',
+  'Sports': 'sports',
+  'General': 'general'
+};

@@ -51,8 +51,13 @@ class DBProvider {
           "bookmarked BIT,"
           "UNIQUE(url));";
 
+      var metadata = "CREATE TABLE metadata"
+          "(id TEXT PRIMARY KEY,"
+          "value INTEGER);";
+
       await db.transaction((txn) async {
         await txn.execute('$articleTable');
+        await txn.execute('$metadata');
 
         print('DBProvider.await populateDb end (txn)');
       });
@@ -68,18 +73,22 @@ class DBProvider {
     return res;
   }
 
-  Future<int> insertArticleList(List<Article> articles, {category}) async {
+  Future<List<int>> insertArticleList(List<Article> articles,
+      {category}) async {
     print('=== DBProvider.insertArticleList start ===');
     final db = await database;
     var res;
+
     await db.transaction((txn) async {
+      Batch batch = txn.batch();
       articles.forEach((article) async {
-        res = await txn.insert(
+        batch.insert(
           'articles',
           article.toMap(category: category),
           conflictAlgorithm: ConflictAlgorithm.replace,
         );
       });
+      res = await batch.commit(continueOnError: true);
     });
     print('article $res inserted');
     return res;
@@ -125,6 +134,24 @@ class DBProvider {
   }
 
   Future close() async => db.close();
+
+  Future<int> insertMetadata(String id) async {
+    final db = await database;
+    var res;
+    res = await db.insert(
+        'metadata', {"id": id, "value": DateTime.now().millisecond},
+        conflictAlgorithm: ConflictAlgorithm.replace);
+
+    return res;
+  }
+
+  Future<int> getValue(String id) async {
+    final db = await database;
+    var res =
+        await db.query("metadata", where: "id = ?", whereArgs: [id], limit: 1);
+    print("+++getlast $res");
+    return res.isNotEmpty ? res.single['value'] : 0;
+  }
 }
 
 List<Article> prepareArticles(List<Map> list) {

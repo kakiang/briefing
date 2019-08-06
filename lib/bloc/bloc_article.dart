@@ -20,38 +20,29 @@ class ArticleListBloc extends BlocBase {
 
   ArticleListBloc() {
     _articleListSubject.add(_articleList);
-    _init();
     categoryListener();
   }
 
-  Future<void> _init() async {
-    await _loadFromDb();
-    if (shouldFetch('ArticleList')) {
-      await _fetchFromNetwork();
+  Future<void> _fetchDataAndPushToStream({category}) async {
+    await _loadFromDatabase(category: category);
+    if (await shouldFetch(category)) {
+      await _fetchFromNetwork(category: category);
     }
   }
 
   categoryListener() {
     categoryObservable.listen((category) async {
-      if (category.toLowerCase().startsWith('all')) {
-        _init();
-      } else {
-        await _loadFromDb(category: category.toLowerCase());
-        if (shouldFetch(category)) {
-          await _fetchFromNetwork(category: category.toLowerCase());
-        }
-      }
+      await _fetchDataAndPushToStream(category: categories[category]);
     });
   }
 
   refresh() async {
     print(':::refresh:::');
-    _articleListSubject.sink.add(_articleList);
-    await _fetchFromNetwork();
+    await _fetchDataAndPushToStream();
   }
 
-  pipe(List<Article> articles) {
-    print(':::pipe::::');
+  sendToStream(List<Article> articles) {
+    print(':::sendToStream::::');
     _articleList.clear();
     _articleList.addAll(articles);
     _articleListSubject.sink.add(_articleList);
@@ -63,20 +54,20 @@ class ArticleListBloc extends BlocBase {
     _articleCategorySubject.close();
   }
 
-  Future<void> _loadFromDb({category}) async {
+  Future<void> _loadFromDatabase({String category}) async {
     print('BlocArticle._loadFromDb starts');
     try {
       print('->await RepositoryArticle.getAllArticle starts');
-      var localData = category != null
+      var localData = category != null || category.isEmpty
           ? await RepositoryArticle.getAllArticleByCategory(category)
-          : await RepositoryArticle.getArticlesFromDatabase();
+          : await RepositoryArticle.getArticleFromDatabase();
       print('->await RepositoryArticle.getAllArticle done');
       print('->RepositoryArticle.getAllArticle isEmpty: ${localData.isEmpty}');
 
       if (localData.isNotEmpty) {
-        pipe(localData);
+        sendToStream(localData);
       } else {
-        sendErrorMessage('No article in DB');
+        sendErrorMessage('No article');
       }
     } catch (e) {
       print('=== _loadFromDb $e');
@@ -84,28 +75,25 @@ class ArticleListBloc extends BlocBase {
     print('BlocArticle._loadFromDb end');
   }
 
-  Future<void> _fetchFromNetwork({country = 'us', category = 'general'}) async {
+  Future<void> _fetchFromNetwork({country = 'us', category}) async {
     print('BlocArticle.fetchFromNetwork start');
 
     var articles =
         await RepositoryArticle.getArticlesFromNetwork(country, category);
     if (articles.isNotEmpty) {
       try {
-        await RepositoryArticle.insertArticleList(articles);
+        await RepositoryArticle.insertArticleList(articles, category: category);
       } catch (error) {
-        print('DB Error ${error.statusCode}');
+        print('DB Error ${error.toString()}');
       }
-      await _loadFromDb();
+      await _loadFromDatabase(category: category);
     } else {
       sendErrorMessage('No articles');
     }
   }
 
-  bool shouldFetch(key) {
-    if (rateLimit.shouldFetch(key)) {
-      return true;
-    }
-    return false;
+  Future<bool> shouldFetch(key) async {
+    return await rateLimit.shouldFetch(key);
   }
 
   void sendErrorMessage([String message = "Can't connect to the internet!"]) {

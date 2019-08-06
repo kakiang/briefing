@@ -50,7 +50,7 @@ class _BriefingSliverListState extends State<BriefingSliverList> {
                             margin: EdgeInsets.zero,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(0.0)),
-                            elevation: 3.0,
+                            elevation: 1.0,
                             child: Container(
                               margin: EdgeInsets.symmetric(vertical: 12.0),
                               height: 30.0,
@@ -59,12 +59,14 @@ class _BriefingSliverListState extends State<BriefingSliverList> {
                                 physics: ScrollPhysics(),
                                 shrinkWrap: true,
                                 scrollDirection: Axis.horizontal,
-                                children: categories
+                                children: categories.keys
                                     .map(
                                       (category) => Padding(
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 4.0),
                                         child: ChoiceChip(
+                                            selectedColor:
+                                                Theme.of(context).accentColor,
                                             label: Text(category),
                                             selected: snapshot.data == category,
                                             onSelected: (val) {
@@ -93,12 +95,11 @@ class _BriefingSliverListState extends State<BriefingSliverList> {
                 );
               } else if (snapshot.hasError) {
                 debugPrint("!!!snapshot error ${snapshot.error.toString()}");
-                return GestureDetector(
-                    onTap: _onRefresh,
-                    child: ErrorWidget(message: [
-                      '${snapshot.error}',
-                      'Keep calm, and tap to retry'
-                    ]));
+                return Center(
+                  child: GestureDetector(
+                      onTap: _onRefresh,
+                      child: ErrorWidget(message: ['${snapshot.error}'])),
+                );
               } else {
                 return Center(
                     child: Container(
@@ -121,14 +122,15 @@ class ErrorWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(16.0),
+      padding: EdgeInsets.all(32.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          Image.asset('assets/images/no_internet.png'),
+          Icon(Icons.cloud_off,
+              size: 55.0, color: Theme.of(context).errorColor),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text('Woops, something went wrong...',
+            child: Text('Woops...',
                 textAlign: TextAlign.center,
                 style: Theme.of(context)
                     .textTheme

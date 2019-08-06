@@ -8,8 +8,26 @@ import 'package:http/http.dart' as http;
 const base_url = 'https://newsapi.org/v2';
 const api_key = '11cd66d3a6994c108e7fb7d92cee5e12';
 
-String getUrl(country, category) =>
-    '$base_url/top-headlines?country=$country&category=$category&page=1&apiKey=$api_key';
+String getUrl(String country, String category) {
+  var url = '$base_url/top-headlines?page=1';
+  if (country != null && country.isNotEmpty) {
+    url += '&country=$country';
+  }
+  if (category != null && category.isNotEmpty) {
+    url += '&category=$category';
+  }
+  return url += '&apiKey=$api_key';
+}
+
+class RepositoryCommon {
+  static Future<int> getValue(String id) async {
+    return await DBProvider.db.getValue(id);
+  }
+
+  static Future<int> insertMetadata(String category) async {
+    return await DBProvider.db.insertMetadata(category);
+  }
+}
 
 class RepositoryArticle {
   static Future<void> insertArticle(Article article) async {
@@ -21,7 +39,7 @@ class RepositoryArticle {
     return await DBProvider.db.insertArticleList(articles, category: category);
   }
 
-  static Future<List<Article>> getArticlesFromDatabase() async {
+  static Future<List<Article>> getArticleFromDatabase() async {
     return await DBProvider.db.getAllArticle();
   }
 
@@ -46,6 +64,7 @@ class RepositoryArticle {
 
 List<Article> parseArticlesList(String responseBody) {
   final parsed = json.decode(responseBody);
+  print("+++ ${parsed['totalResults']}");
   if (parsed['totalResults'] > 0) {
     var articles = List<Article>.from(parsed['articles']
         .map((article) => Article.fromMap(article, network: true)));
