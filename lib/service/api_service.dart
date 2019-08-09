@@ -85,7 +85,7 @@ List<Article> parseArticlesXml(String responseBody) {
         imageUrl: image,
         publishedAt: pubDate,
         url: link,
-        source: Uri(scheme: source2).host,
+        source: source2?.replaceAll('https://www.', '') ?? '',
         description: description);
   }).toList();
 }

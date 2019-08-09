@@ -1,3 +1,4 @@
+import 'package:briefing/bookmarked_article_list.dart';
 import 'package:briefing/briefing_sliver_list.dart';
 import 'package:briefing/model/article.dart';
 import 'package:briefing/theme/theme.dart';
@@ -31,7 +32,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
-  final menus = [Menu.local, Menu.headlines, Menu.favorites];
+  final menus = [Menu.local, Menu.headlines, Menu.favorites, Menu.agencies];
 
   @override
   void initState() {
@@ -48,22 +49,23 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     Widget getScreen() {
-      var page;
-      setState(() {
-        page = _selectedIndex < 3
-            ? BriefingSliverList(menu: menus[_selectedIndex])
-            : SliverList(
-                delegate: SliverChildListDelegate([
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 64.0),
-                  child: Center(
-                    child: Text('Agencies(sources) comming soon...',
-                        style: TextStyle(fontSize: 22)),
-                  ),
-                )
-              ]));
-      });
-      return page;
+      if (menus[_selectedIndex] == Menu.favorites) {
+        return BookmarkArticleList();
+      }
+      if (menus[_selectedIndex] == Menu.local ||
+          menus[_selectedIndex] == Menu.headlines) {
+        return BriefingSliverList(menu: menus[_selectedIndex]);
+      }
+      return SliverList(
+          delegate: SliverChildListDelegate([
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 64.0),
+          child: Center(
+            child: Text('Agencies(sources) comming soon...',
+                style: TextStyle(fontSize: 22)),
+          ),
+        )
+      ]));
     }
 
     return AnnotatedRegion<SystemUiOverlayStyle>(

@@ -26,18 +26,9 @@ class ArticleListBloc extends BlocBase {
   }
 
   categoryListener() {
-    menuSubject.stream.listen((menu) async {
-      print('menuSubject.stream.listen((menu)');
-      if (menu == Menu.favorites) {
-        print('menu == Menu.favorites');
-        await _loadBookmarkedArticlesFromDatabase();
-      } else {
-        print('else');
-        categoryObservable.listen((category) async {
-          print('categoryObservable.listen((category) ');
-          await _fetchDataAndPushToStream(category: categories[category]);
-        });
-      }
+    categoryObservable.listen((category) async {
+      print('categoryObservable.listen($category)');
+      await _fetchDataAndPushToStream(category: categories[category]);
     });
   }
 
@@ -66,20 +57,6 @@ class ArticleListBloc extends BlocBase {
     _articleListSubject.close();
     _articleCategorySubject.close();
     menuSubject.close();
-    RepositoryCommon.close();
-  }
-
-  Future<void> _loadBookmarkedArticlesFromDatabase() async {
-    try {
-      var localData = await RepositoryArticle.getBookmarkedArticles();
-      if (localData.isNotEmpty) {
-        sendToStream(localData);
-      } else {
-        sendErrorMessage('No bookmarked articles');
-      }
-    } catch (e) {
-      print(e);
-    }
   }
 
   Future<void> _loadFromDatabase({String category}) async {
