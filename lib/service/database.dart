@@ -137,12 +137,14 @@ class DBProvider {
 
   Future<int> insertMetadata(String id) async {
     final db = await database;
-    var res;
-    res = await db.insert(
-        'metadata', {"id": id, "value": DateTime.now().millisecond},
+    return await db.insert(
+        'metadata', {"id": id, "value": DateTime.now().millisecondsSinceEpoch},
         conflictAlgorithm: ConflictAlgorithm.replace);
+  }
 
-    return res;
+  Future<int> deleteMetadata(String id) async {
+    final db = await database;
+    return await db.delete('metadata', where: "id = ?", whereArgs: [id]);
   }
 
   Future<int> getValue(String id) async {

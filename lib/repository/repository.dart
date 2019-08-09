@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 
 const base_url = 'https://newsapi.org/v2';
 const api_key = '11cd66d3a6994c108e7fb7d92cee5e12';
-
+const local_url ='https://news.google.com/rss';
 String getUrl(String country, String category) {
   var url = '$base_url/top-headlines?page=1';
   if (country != null && country.isNotEmpty) {
@@ -24,8 +24,12 @@ class RepositoryCommon {
     return await DBProvider.db.getValue(id);
   }
 
-  static Future<int> insertMetadata(String category) async {
-    return await DBProvider.db.insertMetadata(category);
+  static Future<int> insertMetadata(String id) async {
+    return await DBProvider.db.insertMetadata(id);
+  }
+
+  static Future deleteMetadata(String id) async {
+    return await DBProvider.db.deleteMetadata(id);
   }
 }
 
@@ -49,16 +53,29 @@ class RepositoryArticle {
 
   static Future<List<Article>> getArticlesFromNetwork(country, category) async {
     print('BlocArticle.fetchFromNetwork start');
-    var articles = [];
     try {
       final response = await http.get(getUrl(country, category));
+      print('++response $response');
       if (response.statusCode == 200) {
-        articles = await compute(parseArticlesList, response.body);
+        return await compute(parseArticlesList, response.body);
       }
     } catch (e) {
       print('=== _fetchFromNetwork Error ${e.toString()}');
     }
-    return articles;
+    return [];
+  }
+
+    static Future<List<Article>> getLocalNewsFromNetwork(country, category) async {
+    try {
+      final response = await http.get(getUrl(country, category));
+      print('++response $response');
+      if (response.statusCode == 200) {
+        return await compute(parseArticlesList, response.body);
+      }
+    } catch (e) {
+      print('=== _fetchFromNetwork Error ${e.toString()}');
+    }
+    return [];
   }
 }
 
