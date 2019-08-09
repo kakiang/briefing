@@ -2,12 +2,13 @@ import 'dart:async';
 
 import 'package:briefing/bloc/bloc_provider.dart';
 import 'package:briefing/model/article.dart';
-import 'package:briefing/model/repository.dart';
+import 'package:briefing/repository/repository.dart';
 import 'package:briefing/util/rate_limiter.dart';
 import 'package:rxdart/rxdart.dart';
 
 class ArticleListBloc extends BlocBase {
   RateLimiter rateLimit = getRateLimiter;
+  final menuSubject = BehaviorSubject.seeded(Menu.local);
   final _articleListSubject = BehaviorSubject<List<Article>>();
   final _articleCategorySubject = BehaviorSubject.seeded('All');
   List<Article> _articleList = <Article>[];
@@ -20,29 +21,41 @@ class ArticleListBloc extends BlocBase {
 
   ArticleListBloc() {
     _articleListSubject.add(_articleList);
+
     categoryListener();
   }
 
-  Future<void> _fetchDataAndPushToStream({category}) async {
-    await _loadFromDatabase(category: category);
-    if (await shouldFetch(category)) {
-      await _fetchFromNetwork(category: category);
-    }
-  }
-
   categoryListener() {
-    categoryObservable.listen((category) async {
-      await _fetchDataAndPushToStream(category: categories[category]);
+    menuSubject.stream.listen((menu) async {
+      print('menuSubject.stream.listen((menu)');
+      if (menu == Menu.favorites) {
+        print('menu == Menu.favorites');
+        await _loadBookmarkedArticlesFromDatabase();
+      } else {
+        print('else');
+        categoryObservable.listen((category) async {
+          print('categoryObservable.listen((category) ');
+          await _fetchDataAndPushToStream(category: categories[category]);
+        });
+      }
     });
   }
 
   refresh() async {
     print(':::refresh:::');
+    var key = await categoryObservable.last;
+    await rateLimit.reset(key);
     await _fetchDataAndPushToStream();
   }
 
+  Future<void> _fetchDataAndPushToStream({category}) async {
+    await _loadFromDatabase(category: category);
+    if (_articleList.isEmpty || await shouldFetch(category)) {
+      await _fetchFromNetwork(category: category);
+    }
+  }
+
   sendToStream(List<Article> articles) {
-    print(':::sendToStream::::');
     _articleList.clear();
     _articleList.addAll(articles);
     _articleListSubject.sink.add(_articleList);
@@ -52,34 +65,40 @@ class ArticleListBloc extends BlocBase {
   dispose() {
     _articleListSubject.close();
     _articleCategorySubject.close();
+    menuSubject.close();
+    RepositoryCommon.close();
+  }
+
+  Future<void> _loadBookmarkedArticlesFromDatabase() async {
+    try {
+      var localData = await RepositoryArticle.getBookmarkedArticles();
+      if (localData.isNotEmpty) {
+        sendToStream(localData);
+      } else {
+        sendErrorMessage('No bookmarked articles');
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future<void> _loadFromDatabase({String category}) async {
-    print('BlocArticle._loadFromDb starts');
     try {
-      print('->await RepositoryArticle.getAllArticle starts');
-      var localData = category != null || category.isEmpty
-          ? await RepositoryArticle.getAllArticleByCategory(category)
-          : await RepositoryArticle.getArticleFromDatabase();
-      print('->await RepositoryArticle.getAllArticle done');
-      print('->RepositoryArticle.getAllArticle isEmpty: ${localData.isEmpty}');
+      var localData = await RepositoryArticle.getAllArticleByCategory(category);
 
       if (localData.isNotEmpty) {
         sendToStream(localData);
       } else {
-        sendErrorMessage('No article');
+        sendErrorMessage('No $category articles');
       }
     } catch (e) {
       print('=== _loadFromDb $e');
     }
-    print('BlocArticle._loadFromDb end');
   }
 
   Future<void> _fetchFromNetwork({country = 'us', category}) async {
-    print('BlocArticle.fetchFromNetwork start');
-
     var articles =
-        await RepositoryArticle.getArticlesFromNetwork(country, category);
+        await RepositoryArticle.getArticleListFromNetwork(country, category);
     if (articles.isNotEmpty) {
       try {
         await RepositoryArticle.insertArticleList(articles, category: category);
@@ -87,8 +106,6 @@ class ArticleListBloc extends BlocBase {
         print('DB Error ${error.toString()}');
       }
       await _loadFromDatabase(category: category);
-    } else {
-      sendErrorMessage('No articles');
     }
   }
 
@@ -98,8 +115,8 @@ class ArticleListBloc extends BlocBase {
 
   void sendErrorMessage([String message = "Can't connect to the internet!"]) {
     print('sendErrorMessage');
-    if (_articleList.isEmpty)
-      _articleListSubject.addError(BriefingError(message));
+    _articleListSubject.addError(BriefingError(message));
+    _articleList.clear();
   }
 }
 

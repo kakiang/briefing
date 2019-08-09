@@ -13,5 +13,7 @@ const themeAppBlue500 = Color(0xFF1E88E5);
 
 const themeAppErrorRed = const Color(0xFFC5032B);
 
+const themeAppAccentColor = Colors.cyan;
+
 const themeAppSurfaceWhite = const Color(0xFFFFFBFA);
 const themeAppBackgroundWhite = Colors.white;

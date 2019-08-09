@@ -7,10 +7,10 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
-class DBProvider {
-  DBProvider._();
+class DatabaseService {
+  DatabaseService._();
 
-  static final DBProvider db = DBProvider._();
+  static final DatabaseService db = DatabaseService._();
 
   Database _database;
 
@@ -29,13 +29,13 @@ class DBProvider {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, "briefing.db");
     var db = await openDatabase(path, version: 1, onCreate: populateDb);
-    print('DBProvider.initDB() end');
+//    print('DBProvider.initDB() end');
     return db;
   }
 
   populateDb(Database db, int version) async {
     await Future(() async {
-      print('  DBProvider.await populateDb start');
+//      print('  DBProvider.await populateDb start');
 
       var articleTable = "CREATE TABLE articles"
           "(id INTEGER PRIMARY KEY autoincrement, "
@@ -59,7 +59,7 @@ class DBProvider {
         await txn.execute('$articleTable');
         await txn.execute('$metadata');
 
-        print('DBProvider.await populateDb end (txn)');
+//        print('DBProvider.await populateDb end (txn)');
       });
     });
   }
@@ -73,9 +73,8 @@ class DBProvider {
     return res;
   }
 
-  Future<List<int>> insertArticleList(List<Article> articles,
+  Future<List<dynamic>> insertArticleList(List<Article> articles,
       {category}) async {
-    print('=== DBProvider.insertArticleList start ===');
     final db = await database;
     var res;
 
@@ -96,7 +95,8 @@ class DBProvider {
 
   Future<List<Article>> getAllArticle() async {
     final db = await database;
-    List<Map> res = await db.query("articles", orderBy: "publishedAt DESC");
+    List<Map> res = await db.query("articles",
+        where: "category != 'local'", orderBy: "publishedAt DESC");
     return res.isNotEmpty ? await compute(prepareArticles, res) : [];
   }
 
@@ -106,6 +106,14 @@ class DBProvider {
         where: "category = ?",
         orderBy: "publishedAt DESC",
         whereArgs: [category]);
+    return res.isNotEmpty ? await compute(prepareArticles, res) : [];
+  }
+
+  Future<List<Article>> getBookmarkedArticles() async {
+    final db = await database;
+    List<Map> res = await db.query("articles",
+        where: "bookmarked = ?", orderBy: "publishedAt DESC", whereArgs: [1]);
+    print('@@@@@ getBookmarkedArticles count ${res.length}');
     return res.isNotEmpty ? await compute(prepareArticles, res) : [];
   }
 
@@ -128,7 +136,6 @@ class DBProvider {
   }
 
   Future<int> deleteAllArticle() async {
-    print('DBProvider.deleteAllArticle start');
     final db = await database;
     return db.rawDelete("DELETE FROM articles");
   }
@@ -151,7 +158,6 @@ class DBProvider {
     final db = await database;
     var res =
         await db.query("metadata", where: "id = ?", whereArgs: [id], limit: 1);
-    print("+++getlast $res");
     return res.isNotEmpty ? res.single['value'] : 0;
   }
 }

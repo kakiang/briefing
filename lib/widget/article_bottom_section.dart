@@ -1,5 +1,5 @@
 import 'package:briefing/model/article.dart';
-import 'package:briefing/widget/bottomsheet_article_menu.dart';
+import 'package:briefing/widget/article_menu.dart';
 import 'package:flutter/material.dart';
 
 class ArticleBottomSection extends StatelessWidget {

@@ -1,5 +1,5 @@
 import 'package:briefing/model/article.dart';
-import 'package:briefing/model/database.dart';
+import 'package:briefing/service/database.dart';
 import 'package:flutter/material.dart';
 import 'package:share/share.dart';
 
@@ -43,7 +43,7 @@ class _BottomSheetArticleMenuState extends State<BottomSheetArticleMenu> {
                 widget.article.bookmarked = !widget.article.bookmarked;
               });
 
-              int id = await DBProvider.db.updateArticle(widget.article);
+              int id = await DatabaseService.db.updateArticle(widget.article);
               print('Article $id updated');
             },
           ),

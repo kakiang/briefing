@@ -61,21 +61,38 @@ class Article {
     var formatter = DateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 //    var formatter = DateFormat("EEE, d MMM yyyy HH:mm:ss zzz");
 
-    DateTime parsedDate = formatter.parse(publishedAt);
-    Duration duration = DateTime.now().difference(parsedDate);
+    DateTime parsedDate;
 
-    if (duration.inDays > 7 || duration.isNegative) {
-      return DateFormat.MMMMd().format(parsedDate);
-    } else if (duration.inDays >= 1 && duration.inDays <= 7) {
-      return duration.inDays == 1 ? "1 day ago" : "${duration.inDays} days ago";
-    } else if (duration.inHours >= 1) {
-      return duration.inHours == 1
-          ? "1 hour ago"
-          : "${duration.inHours} hours ago";
+    try {
+      parsedDate = formatter.parse(publishedAt);
+    } catch (error) {
+      try {
+        parsedDate =
+            DateFormat("EEE, d MMM yyyy HH:mm:ss zzz").parse(publishedAt);
+      } catch (error) {
+        print('${error.toString()}');
+      }
+    }
+    if (parsedDate != null) {
+      Duration duration = DateTime.now().difference(parsedDate);
+
+      if (duration.inDays > 7 || duration.isNegative) {
+        return DateFormat.MMMMd().format(parsedDate);
+      } else if (duration.inDays >= 1 && duration.inDays <= 7) {
+        return duration.inDays == 1
+            ? "1 day ago"
+            : "${duration.inDays} days ago";
+      } else if (duration.inHours >= 1) {
+        return duration.inHours == 1
+            ? "1 hour ago"
+            : "${duration.inHours} hours ago";
+      } else {
+        return duration.inMinutes == 1
+            ? "1 minute ago"
+            : "${duration.inMinutes} minutes ago";
+      }
     } else {
-      return duration.inMinutes == 1
-          ? "1 minute ago"
-          : "${duration.inMinutes} minutes ago";
+      return publishedAt;
     }
   }
 
@@ -101,5 +118,8 @@ const categories = {
   'Health': 'health',
   'Science': 'science',
   'Sports': 'sports',
-  'General': 'general'
+  'General': 'general',
+  'local': 'local'
 };
+
+enum Menu { local, headlines, favorites, agencies }
