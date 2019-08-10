@@ -14,9 +14,8 @@ class _ArticleThumbnailState extends State<ArticleThumbnail> {
   @override
   Widget build(BuildContext context) {
     return Container(
-//      padding: EdgeInsets.only(right: 8.0, left: 8.0),
       child: CachedNetworkImage(
-          imageUrl: widget.article.thumbnail ?? '',
+          imageUrl: widget.article.imageUrl,
           imageBuilder: (context, imageProvider) => Container(
                 width: 92.0,
                 height: 92.0,
@@ -29,22 +28,5 @@ class _ArticleThumbnailState extends State<ArticleThumbnail> {
           placeholder: (context, url) => Container(),
           errorWidget: (context, url, error) => Container()),
     );
-
-    // // This is an animated widget built into flutter.
-    // return AnimatedCrossFade(
-    //   // You pass it the starting widget and the ending widget.
-    //   firstChild: placeholder,
-    //   secondChild: articleThumbnail,
-    //   // Then, you pass it a ternary that should be based on your state
-    //   //
-    //   // If renderUrl is null tell the widget to use the placeholder,
-    //   // otherwise use the dogAvatar.
-
-    //   crossFadeState: widget.article.thumbnail == null
-    //       ? CrossFadeState.showFirst
-    //       : CrossFadeState.showSecond,
-    //   // Finally, pass in the amount of time the fade should take.
-    //   duration: Duration(milliseconds: 1000),
-    // );
   }
 }

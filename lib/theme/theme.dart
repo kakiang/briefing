@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 ThemeData buildAppTheme() {
   final ThemeData base = ThemeData.light();
   return base.copyWith(
-    accentColor: themeAppIndigo,
+    accentColor: themeAppBlue500,
     primaryColor: themeAppWhite100,
     primaryColorBrightness: Brightness.light,
     bottomAppBarColor: themeAppWhite100,
@@ -18,10 +18,13 @@ ThemeData buildAppTheme() {
     textTheme: _buildAppTextTheme(base.textTheme),
     primaryTextTheme: _buildAppTextTheme(base.primaryTextTheme),
     accentTextTheme: _buildAppTextTheme(base.accentTextTheme),
-    accentIconTheme: base.accentIconTheme.copyWith(color: themeAppIndigo),
+    accentIconTheme: base.accentIconTheme.copyWith(color: themeAppBlue500),
     primaryIconTheme: base.iconTheme.copyWith(color: themeAppGrey600),
     inputDecorationTheme: InputDecorationTheme(border: OutlineInputBorder()),
     iconTheme: base.iconTheme.copyWith(color: themeAppGrey700),
+    chipTheme: base.chipTheme.copyWith(
+        secondaryLabelStyle: base.chipTheme.secondaryLabelStyle
+            .copyWith(color: Colors.white, fontWeight: FontWeight.w500)),
   );
 }
 
@@ -40,7 +43,7 @@ TextTheme _buildAppTextTheme(TextTheme base) {
           button: base.button.copyWith(fontFamily: 'Libre_Franklin'),
           subtitle: base.subtitle.copyWith(
             fontFamily: 'Libre_Franklin',
-            fontSize: 14.0,
+            fontSize: 18.0,
           ))
       .apply(
           fontFamily: 'Crimson_Text',

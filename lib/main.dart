@@ -1,6 +1,6 @@
+import 'package:briefing/bookmarked_article_list.dart';
 import 'package:briefing/briefing_sliver_list.dart';
-import 'package:briefing/channel_sliver_list.dart';
-import 'package:briefing/model/database/database.dart';
+import 'package:briefing/model/article.dart';
 import 'package:briefing/theme/theme.dart';
 import 'package:briefing/widget/main_sliverappbar.dart';
 import 'package:flutter/material.dart';
@@ -32,22 +32,15 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
-  static var briefingSliver = BriefingSliverList();
-  static var newsstandSliver = ChannelSliverList();
-  var _pages = {
-    "Briefing": briefingSliver,
-    "Newsstands": newsstandSliver,
-  };
+  final menus = [Menu.local, Menu.headlines, Menu.favorites, Menu.agencies];
 
   @override
   void initState() {
     super.initState();
-//    DBProvider.db.initDB();
   }
 
   @override
   void dispose() {
-    DBProvider.db.close();
     super.dispose();
   }
 
@@ -55,12 +48,31 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    Widget getScreen() {
+      if (menus[_selectedIndex] == Menu.favorites) {
+        return BookmarkArticleList();
+      }
+      if (menus[_selectedIndex] == Menu.local ||
+          menus[_selectedIndex] == Menu.headlines) {
+        return BriefingSliverList(menu: menus[_selectedIndex]);
+      }
+      return SliverList(
+          delegate: SliverChildListDelegate([
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 64.0),
+          child: Center(
+            child: Text('Agencies(sources) comming soon...',
+                style: TextStyle(fontSize: 22)),
+          ),
+        )
+      ]));
+    }
+
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle(
-        systemNavigationBarDividerColor: Colors.grey,
         statusBarIconBrightness: Brightness.dark,
         statusBarBrightness: Brightness.light,
-        statusBarColor: Colors.white,
+        statusBarColor: Theme.of(context).primaryColor,
         systemNavigationBarColor: Colors.white,
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
@@ -69,39 +81,41 @@ class _MyHomePageState extends State<MyHomePage> {
           key: _scaffoldKey,
           body: CustomScrollView(
             slivers: <Widget>[
-              MainSliverAppBar(title: _pages.keys.elementAt(_selectedIndex)),
-              _pages.values.elementAt(_selectedIndex)
+              MainSliverAppBar(title: 'Briefing'),
+              getScreen(),
             ],
           ),
-          floatingActionButton: _selectedIndex == 1
-              ? FloatingActionButton(
-                  backgroundColor: Theme.of(context).accentColor,
-                  child: Icon(
-                    Icons.add,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                  onPressed: () {
-                    _scaffoldKey.currentState
-                        .showSnackBar(SnackBar(content: Text("soon")));
-//                    Navigator.of(context).push(MaterialPageRoute(
-//                        builder: (BuildContext context) => ChannelDialog(),
-//                        fullscreenDialog: true));
-                  },
-                )
-              : Container(),
-          floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
           bottomNavigationBar: BottomAppBar(
-            color: Colors.grey[50],
-            shape: _selectedIndex == 1 ? CircularNotchedRectangle() : null,
-            child: InkWell(
-              onTap: () => showBottomAppBarSheet(),
-              child: Row(
-                children: <Widget>[
-                  IconButton(
-                      icon: Icon(Icons.menu),
-                      onPressed: () => showBottomAppBarSheet()),
-//                IconButton(icon: Icon(Icons.refresh), onPressed: () {})
+            color: Theme.of(context).primaryColor,
+            child: Container(
+              decoration: BoxDecoration(boxShadow: [
+                BoxShadow(
+                    color: Colors.cyan[100],
+                    offset: Offset(-2.0, 2.0),
+                    blurRadius: 2.0,
+                    spreadRadius: 2.0)
+              ]),
+              height: 72.0,
+              child: BottomNavigationBar(
+                selectedItemColor: Theme.of(context).accentColor,
+                currentIndex: _selectedIndex,
+                onTap: (val) => _onItemTapped(val),
+                type: BottomNavigationBarType.fixed,
+                backgroundColor: Theme.of(context).primaryColor,
+                selectedFontSize: 18.0,
+                unselectedFontSize: 17.0,
+                items: [
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.local_library), title: Text('Local')),
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.language), title: Text('Headlines')),
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.bookmark_border),
+                      title: Text('Favorites')),
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.filter_none), title: Text('Agencies'))
                 ],
+                elevation: 5.0,
               ),
             ),
           ),
@@ -114,41 +128,6 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _selectedIndex = index;
     });
-    Navigator.pop(context);
-  }
-
-  void showBottomAppBarSheet() {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext builder) {
-        return Container(
-          color: Colors.transparent,
-          child: Container(
-            height: 140.0,
-            decoration: new BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                    topLeft: const Radius.circular(15.0),
-                    topRight: const Radius.circular(15.0))),
-            child: Wrap(children: <Widget>[
-              ListTile(
-                leading: Icon(Icons.format_list_bulleted),
-                title: Text('Headlines'),
-                onTap: () {
-                  _onItemTapped(0);
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.library_books),
-                title: Text('Newsstands'),
-                onTap: () {
-                  _onItemTapped(1);
-                },
-              ),
-            ]),
-          ),
-        );
-      },
-    );
+//    Navigator.pop(context);
   }
 }

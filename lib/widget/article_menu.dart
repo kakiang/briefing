@@ -1,5 +1,5 @@
 import 'package:briefing/model/article.dart';
-import 'package:briefing/model/database/database.dart';
+import 'package:briefing/service/database.dart';
 import 'package:flutter/material.dart';
 import 'package:share/share.dart';
 
@@ -27,24 +27,28 @@ class _BottomSheetArticleMenuState extends State<BottomSheetArticleMenu> {
                 topRight: const Radius.circular(10.0))),
         child: Wrap(children: <Widget>[
           ListTile(
-            leading: Icon(Icons.share),
+            leading: Icon(Icons.share, size: 28.0),
             title: Text('Share'),
             onTap: () {
-              Share.share('check out ${widget.article.link}');
+              Share.share('check out ${widget.article.url}');
             },
           ),
           ListTile(
-            leading: Icon(widget.article.bookmarked
-                ? Icons.bookmark
-                : Icons.bookmark_border),
+            leading: Icon(
+              widget.article.bookmarked
+                  ? Icons.bookmark
+                  : Icons.bookmark_border,
+              size: 28.0,
+            ),
             title: Text(widget.article.bookmarked ? 'Bookmarked' : 'Bookmark'),
             onTap: () async {
               setState(() {
                 widget.article.bookmarked = !widget.article.bookmarked;
               });
 
-              int id = await DBProvider.db.updateArticle(widget.article);
+              int id = await DatabaseService.db.updateArticle(widget.article);
               print('Article $id updated');
+              Navigator.of(context).pop();
             },
           ),
         ]),
